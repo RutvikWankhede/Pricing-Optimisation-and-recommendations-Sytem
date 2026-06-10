@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # PriceSense Analytics (ML-Based Pricing Optimization & Recommendation System)
 
 PriceSense Analytics is a self-contained pricing optimization and demand forecasting system. It uses historical transactional sales data to estimate the price elasticity of demand, project volume shifts, train forecasting regression models, simulate dynamic pricing scenarios, and generate optimal price suggestions to maximize revenue or profits.
@@ -73,3 +74,7 @@ To run the automated backend endpoint test suite, execute:
 ```bash
 python -m pytest backend/tests/
 ```
+=======
+# Pricing-Optimisation-and-recommendations-Sytem
+AI-powered pricing optimization and analytics dashboard with forecasting, elasticity analysis, dynamic reporting, and interactive visualizations.
+>>>>>>> 2adf62539aa786b34fe05f6db2edcd18cbc1f2d5
