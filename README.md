@@ -1,9 +1,9 @@
 
 # PriceSense Analytics (ML-Based Pricing Optimization & Recommendation System)
 
-PriceSense Analytics is a self-contained pricing optimization and demand forecasting system. It uses historical transactional sales data to estimate the price elasticity of demand, project volume shifts, train forecasting regression models, simulate dynamic pricing scenarios, and generate optimal price suggestions to maximize revenue or profits.
+PriceSense Analytics is an AI-powered pricing optimization dashboard that helps businesses analyze sales trends, forecast demand, and generate pricing recommendations using machine learning.
 
-The application is structured as a **three-tier single-host system** where the static glassmorphic frontend (HTML/CSS/JS) is served directly from the FastAPI backend, allowing the entire platform to run on a single port.
+The project uses FastAPI for the backend, SQLite for storage, and a simple frontend dashboard for visualizing analytics and reports.
 
 ---
 
