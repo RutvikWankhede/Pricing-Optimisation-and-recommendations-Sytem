@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Price Simulator | PriceSense</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <link href="/css/styles.css" rel="stylesheet"/>
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-tertiary-container": "#F8FAFC",
+                    "surface-container-highest": "#1E293B",
+                    "error-container": "rgba(239, 68, 68, 0.15)",
+                    "surface-bright": "#1E293B",
+                    "outline-variant": "rgba(255, 255, 255, 0.05)",
+                    "on-background": "#F8FAFC",
+                    "secondary": "#22D3EE",
+                    "on-secondary-container": "#22D3EE",
+                    "tertiary-container": "rgba(148, 163, 184, 0.1)",
+                    "inverse-on-surface": "#060913",
+                    "inverse-primary": "#3B82F6",
+                    "on-primary-container": "#3B82F6",
+                    "background": "#060913",
+                    "error": "#EF4444",
+                    "on-primary": "#F8FAFC",
+                    "tertiary": "#94A3B8",
+                    "on-surface": "#F8FAFC",
+                    "on-tertiary": "#F8FAFC",
+                    "tertiary-fixed": "#94A3B8",
+                    "on-primary-fixed": "#F8FAFC",
+                    "on-error": "#F8FAFC",
+                    "on-secondary-fixed": "#F8FAFC",
+                    "secondary-container": "rgba(34, 211, 238, 0.15)",
+                    "surface-container": "#101625",
+                    "surface": "#060913",
+                    "on-primary-fixed-variant": "#3B82F6",
+                    "primary-container": "rgba(59, 130, 246, 0.15)",
+                    "secondary-fixed": "#22D3EE",
+                    "surface-tint": "#3B82F6",
+                    "surface-container-lowest": "#060913",
+                    "primary-fixed-dim": "#3B82F6",
+                    "surface-dim": "#060913",
+                    "outline": "rgba(255, 255, 255, 0.07)",
+                    "secondary-fixed-dim": "#22D3EE",
+                    "on-secondary-fixed-variant": "#22D3EE",
+                    "surface-container-high": "#141C2F",
+                    "inverse-surface": "#F8FAFC",
+                    "on-error-container": "#EF4444",
+                    "primary-fixed": "#3B82F6",
+                    "primary": "#3B82F6",
+                    "surface-container-low": "#0B0F19",
+                    "on-tertiary-fixed": "#F8FAFC",
+                    "surface-variant": "#101625",
+                    "on-tertiary-fixed-variant": "#94A3B8",
+                    "tertiary-fixed-dim": "#94A3B8",
+                    "on-secondary": "#F8FAFC",
+                    "on-surface-variant": "#94A3B8"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.375rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "2xl": "1rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "xl": "40px",
+                    "xs": "4px",
+                    "sm": "8px",
+                    "md": "16px",
+                    "margin": "24px",
+                    "lg": "24px",
+                    "base": "4px",
+                    "gutter": "16px"
+            },
+            "fontFamily": {
+                    "headline-lg": ["Inter"],
+                    "headline-md": ["Inter"],
+                    "body-md": ["Inter"],
+                    "label-md": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "label-sm": ["Inter"],
+                    "display-lg": ["Inter"]
+            },
+            "fontSize": {
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "500"}],
+                    "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                    "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "label-sm": ["11px", {"lineHeight": "14px", "fontWeight": "600"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+    <style>
+      body {
+        font-family: 'Inter', sans-serif;
+        background-color: #081225;
+      }
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      .custom-scrollbar::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #334155;
+        border-radius: 9999px;
+      }
+    </style>
+</head>
+<body class="flex min-h-screen text-on-surface bg-background">
+    <!-- SideNavBar -->
+    <aside id="sidebar-placeholder" class="hidden md:flex h-screen w-64 flex-col bg-surface-container-low border-r border-outline py-md px-sm gap-xs flex-shrink-0 sticky top-0 z-50"></aside>
+
+    <!-- Main Content Canvas -->
+    <main class="flex-1 flex flex-col min-h-screen overflow-x-hidden">
+        <!-- TopNavBar -->
+        <header class="w-full h-16 flex justify-between items-center px-lg bg-surface-container-low/90 backdrop-blur-md border-b border-outline sticky top-0 z-40 flex-shrink-0">
+            <div class="flex items-center gap-lg">
+                <button id="mobile-menu-toggle" class="md:hidden p-sm text-tertiary hover:text-on-surface hover:bg-surface-container rounded-lg transition-all duration-200 mr-xs flex items-center justify-center bg-transparent border-none outline-none cursor-pointer">
+                    <span class="material-symbols-outlined">menu</span>
+                </button>
+                <h1 class="font-headline-md text-headline-md font-bold text-on-surface">Scenario Simulator</h1>
+            </div>
+            <div class="flex items-center gap-md">
+                <div class="relative hidden sm:block">
+                    <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-tertiary text-[20px]">search</span>
+                    <input class="bg-background border border-outline rounded-xl px-10 py-1.5 text-body-md focus:ring-2 focus:ring-[#3B82F6]/25 focus:border-primary outline-none transition-all w-64 text-on-surface" placeholder="Search data points..." type="text"/>
+                </div>
+                <button class="p-2 text-tertiary hover:text-on-surface hover:bg-surface-container rounded-full transition-all duration-200">
+                    <span class="material-symbols-outlined">notifications</span>
+                </button>
+                <button class="p-2 text-tertiary hover:text-on-surface hover:bg-surface-container rounded-full transition-all duration-200">
+                    <span class="material-symbols-outlined">settings</span>
+                </button>
+                <div class="h-8 w-px bg-[#334155] mx-xs"></div>
+                <div class="flex items-center gap-sm" id="user-profile-header">
+                    <div class="w-8 h-8 rounded-full bg-primary text-on-surface flex items-center justify-center font-bold text-xs" id="user-avatar-placeholder">A</div>
+                    <div class="hidden lg:block text-left">
+                        <p class="font-label-md text-label-md text-on-surface leading-none" id="user-name-placeholder">A. Sterling</p>
+                        <p class="font-label-sm text-label-sm text-tertiary opacity-70 mt-1" id="user-role-placeholder">Senior Strategist</p>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="flex-1 p-lg space-y-lg max-w-7xl w-full mx-auto">
+            <!-- Page Selector Card -->
+            <div class="dashboard-card p-md rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-md">
+                <div>
+                    <h2 class="font-headline-md text-headline-md text-on-surface font-bold">"What-If" Elasticity Price Sandbox</h2>
+                    <p class="font-body-md text-body-md text-tertiary mt-xs font-medium">Model hypothetical pricing shifts to calculate margins, demand fluctuations, and total revenue changes.</p>
+                </div>
+                <div class="flex items-center gap-sm">
+                    <label class="font-label-md text-label-md text-tertiary font-bold uppercase tracking-wider whitespace-nowrap">Select Product SKU:</label>
+                    <select id="product-select" class="bg-background border border-outline rounded-xl px-md py-sm font-body-md text-body-md text-on-surface focus:ring-2 focus:ring-[#3B82F6]/25 focus:border-primary outline-none transition-all w-64">
+                        <option value="">Loading active products...</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Empty State -->
+            <section id="empty-state" class="card-elevated rounded-2xl p-xl text-center flex flex-col items-center justify-center min-h-[300px]">
+                <div class="w-16 h-16 rounded-full bg-surface-container-low border border-outline flex items-center justify-center mb-md shadow-md">
+                    <span class="material-symbols-outlined text-primary text-[32px]">science</span>
+                </div>
+                <h3 class="font-headline-md text-headline-md text-on-surface font-bold">No Product Selected</h3>
+                <p class="font-body-md text-body-md text-tertiary max-w-md mt-sm font-medium">Choose an active product from the drop-down menu above to load variables and launch interactive simulations.</p>
+            </section>
+
+            <!-- Simulator console workspace (hidden by default) -->
+            <section id="simulator-workspace" class="hidden space-y-lg">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-lg">
+                    <!-- Slider Console Card -->
+                    <div class="dashboard-card p-lg rounded-2xl lg:col-span-2 flex flex-col justify-between min-h-[220px]">
+                        <div>
+                            <div class="flex items-center justify-between mb-md">
+                                <span class="text-xs text-tertiary font-bold uppercase tracking-wider">Simulate Price Value</span>
+                                <span class="text-3xl font-extrabold text-primary font-mono tracking-tight" id="simulated-price-display">₹0.00</span>
+                            </div>
+                            
+                            <!-- Slider input -->
+                            <input type="range" id="price-slider" class="w-full h-2 bg-surface-container-low rounded-lg appearance-none cursor-pointer accent-primary border border-outline my-md outline-none">
+                            
+                            <div class="flex justify-between text-[11px] text-tertiary font-semibold font-mono">
+                                <span id="slider-min">₹0.00</span>
+                                <span id="slider-base" class="text-primary">Baseline Price</span>
+                                <span id="slider-max">₹0.00</span>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-md pt-lg border-t border-outline/20 mt-lg">
+                            <div>
+                                <span class="text-[10px] text-tertiary block uppercase font-bold tracking-wider">Product Base Price</span>
+                                <span class="font-body-md text-body-md text-on-surface font-mono font-semibold" id="base-price-display">₹0.00</span>
+                            </div>
+                            <div>
+                                <span class="text-[10px] text-tertiary block uppercase font-bold tracking-wider">SKU Average Cost</span>
+                                <span class="font-body-md text-body-md text-on-surface font-mono font-semibold" id="unit-cost-display">₹0.00</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Elasticity details -->
+                    <div class="card-elevated p-lg rounded-2xl flex flex-col justify-between hover:border-primary/40 transition-colors duration-250">
+                        <div>
+                            <h3 class="font-label-md text-label-md text-tertiary font-bold uppercase tracking-widest mb-md">Model Parameters</h3>
+                            <div class="mb-md bg-surface-container-low/30 p-md rounded-xl border border-outline/10">
+                                <span class="text-[10px] text-tertiary block uppercase font-bold mb-1">Elasticity Coefficient</span>
+                                <span class="text-3xl font-extrabold text-on-surface font-mono font-bold tracking-tight block mt-1" id="elasticity-display">-1.50</span>
+                            </div>
+                        </div>
+                        <div>
+                            <span class="text-[10px] text-tertiary block uppercase font-bold mb-sm tracking-wider">Classification</span>
+                            <span id="elasticity-badge" class="px-2.5 py-1 rounded text-xs font-bold uppercase tracking-wider bg-secondary-container text-secondary border border-secondary/20 shadow-sm">Elastic</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Output projections -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-lg">
+                    <!-- Demand Card -->
+                    <div class="dashboard-card p-lg rounded-2xl flex flex-col gap-xs">
+                        <span class="text-[10px] text-tertiary font-bold uppercase tracking-wider block">Simulated Daily Demand</span>
+                        <div class="text-2xl lg:text-3xl font-extrabold text-on-surface font-mono tracking-tight truncate mt-xs" id="sim-demand" title="0 units">0 units</div>
+                        <div class="text-[10px] text-tertiary mt-2 flex items-center gap-xs font-semibold">
+                            <span>Baseline:</span>
+                            <span id="base-demand" class="font-mono text-on-surface">0.0</span>
+                        </div>
+                    </div>
+
+                    <!-- Simulated Revenue -->
+                    <div class="dashboard-card p-lg rounded-2xl flex flex-col gap-xs">
+                        <span class="text-[10px] text-tertiary font-bold uppercase tracking-wider block">Projected Daily Revenue</span>
+                        <div class="text-2xl lg:text-3xl font-extrabold text-on-surface font-mono tracking-tight truncate mt-xs" id="sim-revenue" title="₹0.00">₹0.00</div>
+                        <div class="text-[10px] font-bold mt-2" id="rev-pct-container">
+                            <span id="rev-pct-change">0.0%</span>
+                        </div>
+                    </div>
+
+                    <!-- Simulated Profit -->
+                    <div class="dashboard-card p-lg rounded-2xl flex flex-col gap-xs">
+                        <span class="text-[10px] text-tertiary font-bold uppercase tracking-wider block">Projected Daily Profit</span>
+                        <div class="text-2xl lg:text-3xl font-extrabold text-secondary font-mono tracking-tight truncate mt-xs" id="sim-profit" title="₹0.00">₹0.00</div>
+                        <div class="text-[10px] font-bold mt-2" id="prof-pct-container">
+                            <span id="prof-pct-change">0.0%</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Script triggers -->
+    <script src="/js/app.js"></script>
+    <script>
+        const productSelect = document.getElementById('product-select');
+        const emptyState = document.getElementById('empty-state');
+        const simulatorWorkspace = document.getElementById('simulator-workspace');
+        
+        const priceSlider = document.getElementById('price-slider');
+        const simulatedPriceDisplay = document.getElementById('simulated-price-display');
+        const basePriceDisplay = document.getElementById('base-price-display');
+        const unitCostDisplay = document.getElementById('unit-cost-display');
+        const elasticityDisplay = document.getElementById('elasticity-display');
+        const elasticityBadge = document.getElementById('elasticity-badge');
+
+        const simDemand = document.getElementById('sim-demand');
+        const baseDemand = document.getElementById('base-demand');
+        const simRevenue = document.getElementById('sim-revenue');
+        const revPctChange = document.getElementById('rev-pct-change');
+        const revPctContainer = document.getElementById('rev-pct-container');
+        const simProfit = document.getElementById('sim-profit');
+        const profPctChange = document.getElementById('prof-pct-change');
+        const profPctContainer = document.getElementById('prof-pct-container');
+
+        let activeProduct = null;
+        let baselinePrice = 0.0;
+
+        // User profile setup
+        const user = getCurrentUser();
+        if (user) {
+            document.getElementById('user-name-placeholder').innerText = user.full_name;
+            document.getElementById('user-role-placeholder').innerText = user.role === 'analyst' ? 'Pricing Analyst' : 'Senior Executive';
+            document.getElementById('user-avatar-placeholder').innerText = user.full_name.charAt(0).toUpperCase();
+        }
+
+        // 1. Populate product list
+        async function loadProductSelect() {
+            try {
+                const list = await apiRequest('/pricing/products');
+                if (list.length === 0) {
+                    productSelect.innerHTML = '<option value="">No products available. Please upload data first.</option>';
+                    document.getElementById('empty-state').innerHTML = `
+                        <div class="w-16 h-16 rounded-full bg-primary/10 border border-primary/30 flex items-center justify-center mb-md text-primary mx-auto shadow-md">
+                            <span class="material-symbols-outlined text-[32px]">database</span>
+                        </div>
+                        <h3 class="font-headline-md text-headline-md text-on-surface font-bold">No Dataset Found</h3>
+                        <p class="font-body-md text-body-md text-tertiary max-w-md mt-sm font-medium leading-relaxed mx-auto">
+                            Please upload a dataset or try the demo dataset on the <a href="/pages/upload.html" class="text-primary hover:underline font-bold">Transaction Ingestion</a> page to run scenario pricing simulations.
+                        </p>
+                    `;
+                    return;
+                }
+                let options = '<option value="">-- Choose Product SKU --</option>';
+                list.forEach(p => {
+                    options += `<option value="${p.id}">${p.product_name}</option>`;
+                });
+                productSelect.innerHTML = options;
+
+                // Sync selected product from StateStore
+                const savedProductId = StateStore.getSelectedProduct();
+                if (savedProductId && list.some(p => p.id === savedProductId)) {
+                    productSelect.value = savedProductId;
+                    initializeSimulator(savedProductId);
+                } else if (list.length > 0) {
+                    productSelect.value = list[0].id;
+                    StateStore.setSelectedProduct(list[0].id);
+                    initializeSimulator(list[0].id);
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        // Global simulation parameters for real-time reactivity
+        let baseDailyQty = 0.0;
+        let avgUnitCost = 0.0;
+        let elasticity = -0.5;
+
+        // 2. Initialize simulation details for product
+        async function initializeSimulator(productId) {
+            if (!productId) {
+                emptyState.classList.remove('hidden');
+                simulatorWorkspace.classList.add('hidden');
+                return;
+            }
+
+            let elasticityRec = null;
+            let recData = null;
+            let salesData = null;
+
+            try { elasticityRec = await apiRequest(`/pricing/elasticity/${productId}`); } catch (e) { console.warn("Failed to load elasticity:", e); }
+            try { recData = await apiRequest(`/pricing/recommendations/${productId}`); } catch (e) { console.warn("Failed to load recommendations:", e); }
+            try { salesData = await apiRequest(`/pricing/sales/${productId}`); } catch (e) { console.warn("Failed to load sales history:", e); }
+
+            emptyState.classList.add('hidden');
+            simulatorWorkspace.classList.remove('hidden');
+
+            elasticity = elasticityRec ? safeNum(elasticityRec.elasticity_score, -0.5) : -0.5;
+            
+            let fallbackPrice = 10.0;
+            if (salesData && salesData.length > 0) {
+                fallbackPrice = safeNum(salesData[salesData.length - 1].price, 10.0);
+            }
+            baselinePrice = recData ? safeNum(recData.current_price, fallbackPrice) : fallbackPrice;
+            if (baselinePrice <= 0) baselinePrice = 10.0;
+
+            const cost = (salesData && salesData[0]) ? safeNum(salesData[0].cost, 0.0) : 0.0;
+            avgUnitCost = cost;
+
+            // Setup display info
+            elasticityDisplay.innerText = elasticity.toFixed(2);
+            
+            const elType = elasticityRec ? (elasticityRec.elasticity_type || 'inelastic').toLowerCase() : 'inelastic';
+            elasticityBadge.innerText = elasticityRec ? (elasticityRec.elasticity_type || 'Inelastic') : 'Inelastic';
+            if (elType === 'elastic') {
+                elasticityBadge.className = 'px-2.5 py-1 rounded text-xs font-bold uppercase tracking-wider bg-secondary-container text-secondary border border-secondary/20 shadow-sm';
+            } else if (elType === 'inelastic') {
+                elasticityBadge.className = 'px-2.5 py-1 rounded text-xs font-bold uppercase tracking-wider bg-error/15 text-error border border-error/20 shadow-sm';
+            } else {
+                elasticityBadge.className = 'px-2.5 py-1 rounded text-xs font-bold uppercase tracking-wider bg-tertiary-container text-tertiary border border-tertiary/20 shadow-sm';
+            }
+
+            basePriceDisplay.innerText = formatCurrency(baselinePrice);
+            unitCostDisplay.innerText = formatCurrency(cost);
+
+            const minPrice = Math.max(0.01, baselinePrice * 0.5);
+            const maxPrice = Math.max(0.02, baselinePrice * 1.5);
+            
+            priceSlider.min = minPrice;
+            priceSlider.max = maxPrice;
+            priceSlider.value = baselinePrice;
+            priceSlider.step = (baselinePrice > 1000) ? '10' : ((baselinePrice > 100) ? '5' : '1');
+
+            document.getElementById('slider-min').innerText = formatCurrency(minPrice);
+            document.getElementById('slider-max').innerText = formatCurrency(maxPrice);
+
+            await runSimulation(productId, baselinePrice);
+        }
+
+        // Real-time calculation helper in JS (60fps feedback)
+        function updateSimulationUI(simulatedPriceVal) {
+            const simulatedPrice = safeNum(simulatedPriceVal);
+            simulatedPriceDisplay.innerText = formatCurrency(simulatedPrice);
+            
+            const safeBaselinePrice = baselinePrice > 0 ? baselinePrice : 1.0;
+            const safeBaseDailyQty = safeNum(baseDailyQty, 0.0);
+            const safeAvgUnitCost = safeNum(avgUnitCost, 0.0);
+            const safeElasticity = safeNum(elasticity, -0.5);
+            
+            let simulatedQty = 0.0;
+            if (safeBaselinePrice > 0 && simulatedPrice > 0) {
+                const ratio = simulatedPrice / safeBaselinePrice;
+                try {
+                    simulatedQty = safeBaseDailyQty * Math.pow(ratio, safeElasticity);
+                } catch (e) {
+                    simulatedQty = 0.0;
+                }
+            }
+            
+            simulatedQty = safeNum(simulatedQty, 0.0);
+            simulatedQty = Math.max(0.0, simulatedQty);
+            
+            const simulatedRevenue = safeNum(simulatedQty * simulatedPrice, 0.0);
+            const simulatedProfit = safeNum(simulatedQty * (simulatedPrice - safeAvgUnitCost), 0.0);
+            
+            const baseRevenue = safeNum(safeBaseDailyQty * safeBaselinePrice, 0.0);
+            const baseProfit = safeNum(safeBaseDailyQty * (safeBaselinePrice - safeAvgUnitCost), 0.0);
+            
+            const revPct = baseRevenue > 0 ? safeNum((simulatedRevenue - baseRevenue) / baseRevenue, 0.0) : 0.0;
+            const profPct = baseProfit !== 0 ? safeNum((simulatedProfit - baseProfit) / Math.abs(baseProfit), 0.0) : 0.0;
+            
+            simDemand.innerText = `${Math.round(simulatedQty).toLocaleString()} units`;
+            simDemand.title = `${simulatedQty.toFixed(2)} units`;
+            baseDemand.innerText = safeBaseDailyQty.toFixed(1);
+            
+            simRevenue.innerText = formatCurrency(simulatedRevenue);
+            simRevenue.title = formatCurrency(simulatedRevenue);
+            revPctChange.innerText = formatPercent(revPct);
+            revPctChange.className = revPct >= 0 ? 'badge-trend-up' : 'badge-trend-down';
+            revPctContainer.className = 'mt-2 flex items-center';
+            
+            simProfit.innerText = formatCurrency(simulatedProfit);
+            simProfit.title = formatCurrency(simulatedProfit);
+            profPctChange.innerText = formatPercent(profPct);
+            profPctChange.className = profPct >= 0 ? 'badge-trend-up' : 'badge-trend-down';
+            profPctContainer.className = 'mt-2 flex items-center';
+
+            // Dynamic elasticity updates
+            elasticityDisplay.innerText = safeElasticity.toFixed(2);
+            const absEl = Math.abs(safeElasticity);
+            let elType = 'inelastic';
+            let elLabel = 'Inelastic';
+            if (absEl > 1.1) {
+                elType = 'elastic';
+                elLabel = 'Elastic';
+            } else if (absEl >= 0.9) {
+                elType = 'unitary';
+                elLabel = 'Unitary';
+            }
+            
+            elasticityBadge.innerText = elLabel;
+            if (elType === 'elastic') {
+                elasticityBadge.className = 'px-2.5 py-1 rounded text-xs font-bold uppercase tracking-wider bg-secondary-container text-secondary border border-secondary/20 shadow-sm';
+            } else if (elType === 'inelastic') {
+                elasticityBadge.className = 'px-2.5 py-1 rounded text-xs font-bold uppercase tracking-wider bg-error/15 text-error border border-error/20 shadow-sm';
+            } else {
+                elasticityBadge.className = 'px-2.5 py-1 rounded text-xs font-bold uppercase tracking-wider bg-tertiary-container text-tertiary border border-tertiary/20 shadow-sm';
+            }
+        }
+
+        // 3. Trigger simulation recalculations and server sync
+        async function runSimulation(productId, price) {
+            simulatedPriceDisplay.innerText = formatCurrency(price);
+            
+            try {
+                const results = await apiRequest('/pricing/simulate', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        product_id: productId,
+                        simulated_price: parseFloat(price)
+                    })
+                });
+
+                if (!results) return;
+
+                // Sync variables with server calculations
+                baselinePrice = safeNum(results.base_price);
+                baseDailyQty = safeNum(results.base_daily_quantity);
+                avgUnitCost = safeNum(results.unit_cost);
+                elasticity = safeNum(results.elasticity_score, -0.5);
+
+                // Update UI using safe results
+                updateSimulationUI(price);
+
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        priceSlider.addEventListener('input', (e) => {
+            updateSimulationUI(e.target.value);
+        });
+
+        priceSlider.addEventListener('change', (e) => {
+            runSimulation(productSelect.value, e.target.value);
+        });
+
+        productSelect.addEventListener('change', (e) => {
+            StateStore.setSelectedProduct(e.target.value);
+            initializeSimulator(e.target.value);
+        });
+
+        loadProductSelect();
+    </script>
+</body>
+</html>

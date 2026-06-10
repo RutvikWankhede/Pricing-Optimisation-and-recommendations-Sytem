@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>PriceSense Analytics | Dashboard</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <link href="/css/styles.css" rel="stylesheet"/>
+    <!-- Chart.js and Plugins via CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom"></script>
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-tertiary-container": "#F8FAFC",
+                    "surface-container-highest": "#1E293B",
+                    "error-container": "rgba(239, 68, 68, 0.15)",
+                    "surface-bright": "#1E293B",
+                    "outline-variant": "rgba(255, 255, 255, 0.05)",
+                    "on-background": "#F8FAFC",
+                    "secondary": "#22D3EE",
+                    "on-secondary-container": "#22D3EE",
+                    "tertiary-container": "rgba(148, 163, 184, 0.1)",
+                    "inverse-on-surface": "#060913",
+                    "inverse-primary": "#3B82F6",
+                    "on-primary-container": "#3B82F6",
+                    "background": "#060913",
+                    "error": "#EF4444",
+                    "on-primary": "#F8FAFC",
+                    "tertiary": "#94A3B8",
+                    "on-surface": "#F8FAFC",
+                    "on-tertiary": "#F8FAFC",
+                    "tertiary-fixed": "#94A3B8",
+                    "on-primary-fixed": "#F8FAFC",
+                    "on-error": "#F8FAFC",
+                    "on-secondary-fixed": "#F8FAFC",
+                    "secondary-container": "rgba(34, 211, 238, 0.15)",
+                    "surface-container": "#101625",
+                    "surface": "#060913",
+                    "on-primary-fixed-variant": "#3B82F6",
+                    "primary-container": "rgba(59, 130, 246, 0.15)",
+                    "secondary-fixed": "#22D3EE",
+                    "surface-tint": "#3B82F6",
+                    "surface-container-lowest": "#060913",
+                    "primary-fixed-dim": "#3B82F6",
+                    "surface-dim": "#060913",
+                    "outline": "rgba(255, 255, 255, 0.07)",
+                    "secondary-fixed-dim": "#22D3EE",
+                    "on-secondary-fixed-variant": "#22D3EE",
+                    "surface-container-high": "#141C2F",
+                    "inverse-surface": "#F8FAFC",
+                    "on-error-container": "#EF4444",
+                    "primary-fixed": "#3B82F6",
+                    "primary": "#3B82F6",
+                    "surface-container-low": "#0B0F19",
+                    "on-tertiary-fixed": "#F8FAFC",
+                    "surface-variant": "#101625",
+                    "on-tertiary-fixed-variant": "#94A3B8",
+                    "tertiary-fixed-dim": "#94A3B8",
+                    "on-secondary": "#F8FAFC",
+                    "on-surface-variant": "#94A3B8"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.375rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "2xl": "1rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "xl": "40px",
+                    "xs": "4px",
+                    "sm": "8px",
+                    "md": "16px",
+                    "margin": "24px",
+                    "lg": "24px",
+                    "base": "4px",
+                    "gutter": "16px"
+            },
+            "fontFamily": {
+                    "headline-lg": ["Inter"],
+                    "headline-md": ["Inter"],
+                    "body-md": ["Inter"],
+                    "label-md": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "label-sm": ["Inter"],
+                    "display-lg": ["Inter"]
+            },
+            "fontSize": {
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "500"}],
+                    "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                    "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "label-sm": ["11px", {"lineHeight": "14px", "fontWeight": "600"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+    <style>
+      body {
+        font-family: 'Inter', sans-serif;
+        background-color: #081225;
+      }
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      .custom-scrollbar::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #334155;
+        border-radius: 9999px;
+      }
+    </style>
+</head>
+</head>
+<body class="flex min-h-screen text-slate-100 bg-background">
+    <!-- SideNavBar -->
+    <aside id="sidebar-placeholder" class="hidden md:flex h-screen w-64 flex-col bg-[#121A2F]/85 border-r border-white/5 py-md px-sm gap-xs flex-shrink-0 sticky top-0 z-50"></aside>
+
+    <!-- Main Content Canvas -->
+    <main class="flex-1 flex flex-col min-h-screen overflow-x-hidden">
+        <!-- TopNavBar -->
+        <header class="w-full h-16 flex justify-between items-center px-8 bg-[#0B1020]/80 backdrop-blur-md border-b border-white/5 sticky top-0 z-40 flex-shrink-0">
+            <div class="flex items-center gap-6">
+                <button id="mobile-menu-toggle" class="md:hidden p-2 text-slate-400 hover:text-slate-100 hover:bg-white/5 rounded-xl transition-all duration-200 flex items-center justify-center bg-transparent border-none outline-none cursor-pointer">
+                    <span class="material-symbols-outlined">menu</span>
+                </button>
+                <div class="relative flex items-center">
+                    <span class="material-symbols-outlined absolute left-3 text-slate-400 text-[18px]">search</span>
+                    <input class="bg-[#121A2F]/60 border border-white/5 rounded-xl pl-10 pr-4 py-2 w-64 text-xs focus:ring-2 focus:ring-[#3B82F6]/25 focus:border-[#3B82F6] placeholder:text-slate-500 text-slate-100 outline-none transition-all" placeholder="Search data points..." type="text"/>
+                </div>
+            </div>
+            <div class="flex items-center gap-4">
+                <button class="p-2 text-slate-400 hover:text-slate-100 hover:bg-white/5 transition-all duration-200 rounded-full">
+                    <span class="material-symbols-outlined text-[20px]">notifications</span>
+                </button>
+                <button class="p-2 text-slate-400 hover:text-slate-100 hover:bg-white/5 transition-all duration-200 rounded-full">
+                    <span class="material-symbols-outlined text-[20px]">settings</span>
+                </button>
+                <div class="h-6 w-px bg-white/10 mx-1"></div>
+                <div class="flex items-center gap-3" id="user-profile-header">
+                    <div class="w-8 h-8 rounded-full bg-[#3B82F6]/20 border border-[#3B82F6]/30 text-[#3B82F6] flex items-center justify-center font-bold text-xs" id="user-avatar-placeholder">A</div>
+                    <div class="hidden lg:block text-left">
+                        <p class="text-xs font-semibold text-slate-200 leading-none" id="user-name-placeholder">A. Sterling</p>
+                        <p class="text-[10px] text-slate-400 mt-1" id="user-role-placeholder">Senior Strategist</p>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Dashboard Content -->
+        <div class="flex-1 p-8 space-y-8 max-w-7xl w-full mx-auto">
+            <!-- Page Header -->
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <div>
+                    <h2 class="text-3xl font-bold text-slate-50 tracking-tight">System Overview</h2>
+                    <p class="text-sm text-slate-400 mt-1">Analysis of pricing performance and market elasticity for active dataset products.</p>
+                </div>
+            </div>
+
+            <!-- Dashboard Empty State (Premium Glassmorphic Empty State) -->
+            <div id="dashboard-empty-state" class="hidden dashboard-card p-12 text-center flex flex-col items-center justify-center min-h-[420px] relative overflow-hidden group">
+                <div class="absolute -right-20 -top-20 w-48 h-48 bg-blue-500/5 rounded-full blur-3xl"></div>
+                <div class="absolute -left-20 -bottom-20 w-48 h-48 bg-teal-500/5 rounded-full blur-3xl"></div>
+                
+                <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500/10 to-teal-500/10 border border-blue-500/20 flex items-center justify-center mb-6 text-blue-400 shadow-xl shadow-blue-500/5">
+                    <span class="material-symbols-outlined text-[32px]">database</span>
+                </div>
+                <h3 class="text-2xl font-bold text-slate-100 tracking-tight">Welcome to PriceSense Analytics</h3>
+                <p class="text-sm text-slate-400 max-w-md mt-3 font-medium leading-relaxed">
+                    No sales transaction data has been ingested yet. Import your transactional CSV/Excel records, or load the benchmark model catalog to test features.
+                </p>
+                <div class="flex gap-4 mt-8 justify-center">
+                    <a href="/pages/upload.html" class="bg-gradient-to-r from-blue-500 to-teal-500 hover:from-blue-600 hover:to-teal-600 text-white font-semibold px-6 py-3 rounded-xl hover:scale-[1.02] transition-all active:scale-[0.98] shadow-lg shadow-blue-500/10 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-[18px]">upload_file</span>
+                        <span>Ingest Sales Dataset</span>
+                    </a>
+                </div>
+            </div>
+
+            <div id="dashboard-data-container" class="space-y-8">
+                <!-- AI Pricing Insights Banner (Stripe/Linear styled notification) -->
+                <div id="ai-insights-banner" class="hidden bg-gradient-to-r from-blue-500/5 to-cyan-500/5 border border-blue-500/15 rounded-2xl p-6 flex items-start gap-4 hover:border-blue-500/30 transition-all duration-300 shadow-xl shadow-blue-500/2">
+                    <div class="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 flex-shrink-0">
+                        <span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">lightbulb</span>
+                    </div>
+                    <div class="flex-1">
+                        <span class="text-[10px] text-blue-400 font-bold uppercase tracking-wider block mb-1">Pricing Intelligence Brief</span>
+                        <h4 class="text-sm font-bold text-slate-100 mb-1">Operational Insights</h4>
+                        <ul id="ai-insights-list" class="space-y-1.5 text-xs text-slate-400 font-normal list-disc list-inside leading-relaxed">
+                            <!-- Populated dynamically -->
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- KPI Row (Asymmetric Ledger Grid replaced by premium 4-column cards) -->
+                <div id="kpi-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <!-- Loading State placeholder -->
+                    <div class="dashboard-card p-6 h-36 animate-pulse flex flex-col justify-between">
+                        <div class="flex justify-between items-center"><div class="h-4 w-24 bg-slate-800 rounded"></div><div class="h-6 w-6 bg-slate-800 rounded"></div></div>
+                        <div class="h-8 w-32 bg-slate-800 rounded mt-4"></div>
+                        <div class="h-3 w-16 bg-slate-800 rounded mt-2"></div>
+                    </div>
+                    <div class="dashboard-card p-6 h-36 animate-pulse flex flex-col justify-between">
+                        <div class="flex justify-between items-center"><div class="h-4 w-24 bg-slate-800 rounded"></div><div class="h-6 w-6 bg-slate-800 rounded"></div></div>
+                        <div class="h-8 w-32 bg-slate-800 rounded mt-4"></div>
+                        <div class="h-3 w-16 bg-slate-800 rounded mt-2"></div>
+                    </div>
+                    <div class="dashboard-card p-6 h-36 animate-pulse flex flex-col justify-between">
+                        <div class="flex justify-between items-center"><div class="h-4 w-24 bg-slate-800 rounded"></div><div class="h-6 w-6 bg-slate-800 rounded"></div></div>
+                        <div class="h-8 w-32 bg-slate-800 rounded mt-4"></div>
+                        <div class="h-3 w-16 bg-slate-800 rounded mt-2"></div>
+                    </div>
+                    <div class="dashboard-card p-6 h-36 animate-pulse flex flex-col justify-between">
+                        <div class="flex justify-between items-center"><div class="h-4 w-24 bg-slate-800 rounded"></div><div class="h-6 w-6 bg-slate-800 rounded"></div></div>
+                        <div class="h-8 w-32 bg-slate-800 rounded mt-4"></div>
+                        <div class="h-3 w-16 bg-slate-800 rounded mt-2"></div>
+                    </div>
+                </div>
+
+                <!-- Main Charts Row -->
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                    <!-- Large Chart: Revenue Trend (Glassmorphic Container) -->
+                    <div class="lg:col-span-8 dashboard-card p-6 flex flex-col hover:border-[#3B82F6]/50 transition-all duration-300 relative group overflow-hidden">
+                        <div class="flex flex-col sm:flex-row justify-between sm:items-center mb-6 gap-2">
+                            <div>
+                                <span class="text-[10px] text-[#14B8A6] font-bold uppercase tracking-widest block mb-1">Timeline Analysis</span>
+                                <h3 class="font-headline-md text-[18px] text-slate-50 font-bold">Revenue & Profit Trend</h3>
+                                <p class="text-xs text-slate-400 mt-1 font-medium">Aggregated historical performance with moving-average smoothing.</p>
+                            </div>
+                            <!-- Interactive Control Badge -->
+                            <div class="flex items-center gap-2 self-start sm:self-center">
+                                <span class="text-[10px] font-medium text-blue-400 bg-blue-500/10 border border-blue-500/20 px-2.5 py-1 rounded-full flex items-center gap-1">
+                                    <span class="material-symbols-outlined text-[12px]">pan_tool</span> Drag to Pan / Scroll to Zoom
+                                </span>
+                                <button id="reset-zoom-btn" class="text-[10px] font-semibold text-slate-400 hover:text-white bg-white/5 border border-white/10 px-2.5 py-1 rounded-full flex items-center gap-1 transition-all cursor-pointer">
+                                    <span class="material-symbols-outlined text-[12px]">refresh</span> Reset Zoom
+                                </button>
+                            </div>
+                        </div>
+                        <!-- Chart canvas -->
+                        <div class="h-80 w-full relative flex-1">
+                            <canvas id="trend-chart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Side Chart: Category Mix (Glassmorphic Container) -->
+                    <div class="lg:col-span-4 dashboard-card p-6 flex flex-col hover:border-[#14B8A6]/50 transition-all duration-300 relative overflow-hidden group">
+                        <div class="mb-6">
+                            <span class="text-[10px] text-[#14B8A6] font-bold uppercase tracking-widest block mb-1">Revenue mix</span>
+                            <h3 class="font-headline-md text-[18px] text-slate-50 font-bold">Category Distribution</h3>
+                            <p class="text-xs text-slate-400 mt-1 font-medium">Revenue share by market vertical.</p>
+                        </div>
+                        <div class="flex-1 min-h-[240px] relative flex items-center justify-center">
+                            <canvas id="category-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bottom Row: Top Products Table (Premium Card Ledger Layout) -->
+                <div class="dashboard-card p-6 overflow-hidden hover:border-white/10 transition-all duration-300 mt-4">
+                    <div class="flex flex-col sm:flex-row justify-between sm:items-center pb-4 border-b border-white/5 gap-3">
+                        <div>
+                            <div class="flex items-center gap-2 mb-1 flex-wrap">
+                                <span class="text-[10px] text-[#14B8A6] font-bold uppercase tracking-widest block">SKU catalog ledger</span>
+                                <span id="active-category-filter" class="hidden px-2 py-0.5 rounded text-[10px] font-bold bg-[#3B82F6]/15 text-primary border border-primary/20 flex items-center gap-1">
+                                    Category: <span id="filter-category-name"></span>
+                                    <button onclick="clearCategoryFilter()" class="hover:text-error ml-1 font-extrabold cursor-pointer outline-none border-none bg-transparent">×</button>
+                                </span>
+                            </div>
+                            <h3 class="font-headline-md text-[18px] text-slate-50 font-bold">Top Performing Products (by Revenue)</h3>
+                            <p class="text-xs text-slate-400 mt-1">Top 10 assets ranking by total revenue contribution.</p>
+                        </div>
+                        <button id="export-csv-btn" class="flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-slate-200 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 hover:text-white transition-all outline-none cursor-pointer self-start sm:self-center">
+                            <span class="material-symbols-outlined text-[16px]">download</span>
+                            <span>Export CSV</span>
+                        </button>
+                    </div>
+                    <div class="overflow-x-auto custom-scrollbar mt-4">
+                        <table class="w-full text-left border-collapse min-w-[700px]">
+                            <thead>
+                                <tr class="border-b border-white/5 text-slate-400 font-semibold text-xs tracking-wider">
+                                    <th class="px-4 py-3 font-semibold">PRODUCT NAME</th>
+                                    <th class="px-4 py-3 font-semibold">CATEGORY</th>
+                                    <th class="px-4 py-3 font-semibold text-right">UNITS SOLD</th>
+                                    <th class="px-4 py-3 font-semibold text-right">REVENUE</th>
+                                    <th class="px-4 py-3 font-semibold text-right">MARGIN PROFILE</th>
+                                </tr>
+                            </thead>
+                            <tbody id="top-products-body" class="divide-y divide-white/5">
+                                <tr>
+                                    <td colspan="5" class="px-4 py-8 text-center text-slate-500 font-medium">Loading performance data...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Contextual FAB -->
+    <a href="/pages/simulation.html" class="fixed bottom-lg right-lg bg-primary text-on-surface p-md rounded-2xl shadow-2xl shadow-primary/25 flex items-center gap-sm hover:scale-105 hover:bg-[#22D3EE] transition-all active:scale-95 z-50 font-label-md text-label-md font-bold">
+        <span class="material-symbols-outlined">add</span>
+        <span>New Simulation</span>
+    </a>
+
+    <!-- Script triggers -->
+    <script src="/js/app.js"></script>
+    <script>
+        // Chart Optimization, Aggregation & Smoothing Utilities
+        function getCategoryColor(category) {
+            const catLower = category.toLowerCase();
+            if (catLower.includes('biryani')) return '#3B82F6';
+            if (catLower.includes('pizza')) return '#14B8A6';
+            if (catLower.includes('burger')) return '#8B5CF6';
+            if (catLower.includes('chinese') || catLower.includes('noodle')) return '#F97316';
+            if (catLower.includes('sushi')) return '#EF4444';
+            if (catLower.includes('pasta')) return '#10B981';
+            if (catLower.includes('beverage')) return '#EC4899';
+            if (catLower.includes('dessert')) return '#F59E0B';
+            if (catLower.includes('salad')) return '#84CC16';
+            return '#64748B'; // General
+        }
+
+        function calculateMovingAverage(data, windowSize = 3) {
+            const result = [];
+            for (let i = 0; i < data.length; i++) {
+                let sum = 0;
+                let count = 0;
+                for (let j = Math.max(0, i - windowSize + 1); j <= i; j++) {
+                    sum += data[j];
+                    count++;
+                }
+                result.push(sum / count);
+            }
+            return result;
+        }
+
+        function optimizeChartData(trendsData) {
+            if (!trendsData || trendsData.length === 0) return { labels: [], revenue: [], profit: [] };
+            
+            // Sort chronologically
+            const sortedData = [...trendsData].sort((a, b) => new Date(a.label) - new Date(b.label));
+            const len = sortedData.length;
+            let aggregated = [];
+            
+            if (len > 200) {
+                // Aggregate daily data into monthly averages
+                const groups = {};
+                sortedData.forEach(item => {
+                    const key = item.label.substring(0, 7); // YYYY-MM
+                    if (!groups[key]) groups[key] = { revenueSum: 0, profitSum: 0, count: 0 };
+                    groups[key].revenueSum += item.revenue;
+                    groups[key].profitSum += item.profit;
+                    groups[key].count += 1;
+                });
+                
+                Object.keys(groups).sort().forEach(key => {
+                    const dateObj = new Date(key + '-02'); // Avoid timezone shifts
+                    const monthLabel = dateObj.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+                    aggregated.push({
+                        label: monthLabel,
+                        revenue: groups[key].revenueSum / groups[key].count,
+                        profit: groups[key].profitSum / groups[key].count
+                    });
+                });
+            } else if (len > 50) {
+                // Aggregate daily data into weekly averages
+                const groups = {};
+                sortedData.forEach(item => {
+                    const date = new Date(item.label);
+                    const day = date.getDay();
+                    const diff = date.getDate() - day + (day === 0 ? -6 : 1); // Monday as start of week
+                    const monday = new Date(date.setDate(diff));
+                    const key = monday.toISOString().split('T')[0];
+                    
+                    if (!groups[key]) groups[key] = { revenueSum: 0, profitSum: 0, count: 0 };
+                    groups[key].revenueSum += item.revenue;
+                    groups[key].profitSum += item.profit;
+                    groups[key].count += 1;
+                });
+                
+                Object.keys(groups).sort().forEach(key => {
+                    const dateObj = new Date(key);
+                    const weekLabel = 'Wk of ' + dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                    aggregated.push({
+                        label: weekLabel,
+                        revenue: groups[key].revenueSum / groups[key].count,
+                        profit: groups[key].profitSum / groups[key].count
+                    });
+                });
+            } else {
+                // Daily data
+                aggregated = sortedData.map(item => {
+                    const dateObj = new Date(item.label);
+                    const dayLabel = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                    return {
+                        label: dayLabel,
+                        revenue: item.revenue,
+                        profit: item.profit
+                    };
+                });
+            }
+            
+            const rawRevenue = aggregated.map(t => t.revenue);
+            const rawProfit = aggregated.map(t => t.profit);
+            
+            // Smooth values
+            const smoothedRevenue = calculateMovingAverage(rawRevenue, 3);
+            const smoothedProfit = calculateMovingAverage(rawProfit, 3);
+            
+            return {
+                labels: aggregated.map(t => t.label),
+                revenue: smoothedRevenue,
+                profit: smoothedProfit
+            };
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const user = getCurrentUser();
+            if (user) {
+                document.getElementById('user-name-placeholder').innerText = user.full_name;
+                document.getElementById('user-role-placeholder').innerText = user.role === 'analyst' ? 'Pricing Analyst' : 'Senior Executive';
+                document.getElementById('user-avatar-placeholder').innerText = user.full_name.charAt(0).toUpperCase();
+            }
+
+            try {
+                const data = await apiRequest('/dashboard/summary');
+                if (!data) return;
+
+                if (data.sales_trends.length === 0) {
+                    document.getElementById('dashboard-data-container').classList.add('hidden');
+                    document.getElementById('dashboard-empty-state').classList.remove('hidden');
+                    return;
+                }
+
+                // AI Insights Generation
+                try {
+                    const recs = await apiRequest('/pricing/recommendations');
+                    if (recs && recs.length > 0) {
+                        const banner = document.getElementById('ai-insights-banner');
+                        const insightsList = document.getElementById('ai-insights-list');
+                        
+                        let insights = [];
+                        
+                        // Parse recommendations to find interesting behaviors
+                        recs.forEach(r => {
+                            let reasonObj = {};
+                            let isJson = false;
+                            try {
+                                reasonObj = JSON.parse(r.recommendation_reason);
+                                isJson = typeof reasonObj === 'object' && reasonObj !== null;
+                            } catch (e) {
+                                isJson = false;
+                            }
+                            
+                            const changePct = ((r.recommended_price - r.current_price) / r.current_price * 100);
+                            
+                            if (changePct > 1.0) {
+                                insights.push(`<strong>${r.product_name}</strong> maintained demand after recent price increases, indicating lower price sensitivity.`);
+                            } else if (changePct < -1.0) {
+                                insights.push(`<strong>${r.product_name}</strong> displays highly price-sensitive demand. Lowering the rate by ${Math.abs(changePct).toFixed(0)}% is expected to optimize margins by growing sales volume.`);
+                            } else {
+                                insights.push(`<strong>${r.product_name}</strong> is priced optimally. Volume forecasts remain steady under the current pricing structure.`);
+                            }
+                        });
+                        
+                        // Render up to 3 insights
+                        if (insights.length > 0) {
+                            banner.classList.remove('hidden');
+                            insightsList.innerHTML = insights.slice(0, 3).map(ins => `<li>${ins}</li>`).join('');
+                        }
+                    }
+                } catch (e) {
+                    console.error('Failed to load AI Insights:', e);
+                }
+
+                const kpis = data.kpis;
+                const kpiGrid = document.getElementById('kpi-grid');
+                kpiGrid.className = "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 w-full";
+                kpiGrid.innerHTML = `
+                    <!-- Card 1: Revenue -->
+                    <div class="dashboard-card card-glow-blue p-6 flex flex-col justify-between relative overflow-hidden group">
+                        <div class="absolute -right-8 -top-8 w-24 h-24 bg-blue-500/10 rounded-full blur-xl group-hover:bg-blue-500/20 transition-all duration-300"></div>
+                        <div class="flex items-center justify-between z-10">
+                            <span class="text-xs font-semibold uppercase tracking-wider text-slate-400">${kpis.total_revenue.title}</span>
+                            <div class="w-8 h-8 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400">
+                                <span class="material-symbols-outlined text-[18px]">payments</span>
+                            </div>
+                        </div>
+                        <div class="mt-4 z-10">
+                            <div class="text-2xl lg:text-3xl font-bold text-slate-50 tracking-tight font-sans truncate" title="${kpis.total_revenue.value}">${kpis.total_revenue.value}</div>
+                            <div class="flex items-center gap-2 mt-2">
+                                <span class="${kpis.total_revenue.trend === 'up' ? 'badge-trend-up' : 'badge-trend-down'}">${kpis.total_revenue.change}</span>
+                                <span class="text-[10px] text-slate-500">vs last period</span>
+                            </div>
+                        </div>
+                        <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 to-cyan-400 opacity-50"></div>
+                    </div>
+                    
+                    <!-- Card 2: Profit -->
+                    <div class="dashboard-card card-glow-emerald p-6 flex flex-col justify-between relative overflow-hidden group">
+                        <div class="absolute -right-8 -top-8 w-24 h-24 bg-emerald-500/10 rounded-full blur-xl group-hover:bg-emerald-500/20 transition-all duration-300"></div>
+                        <div class="flex items-center justify-between z-10">
+                            <span class="text-xs font-semibold uppercase tracking-wider text-slate-400">${kpis.total_profit.title}</span>
+                            <div class="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+                                <span class="material-symbols-outlined text-[18px]">trending_up</span>
+                            </div>
+                        </div>
+                        <div class="mt-4 z-10">
+                            <div class="text-2xl lg:text-3xl font-bold text-slate-50 tracking-tight font-sans truncate" title="${kpis.total_profit.value}">${kpis.total_profit.value}</div>
+                            <div class="flex items-center gap-2 mt-2">
+                                <span class="${kpis.total_profit.trend === 'up' ? 'badge-trend-up' : 'badge-trend-down'}">${kpis.total_profit.change}</span>
+                                <span class="text-[10px] text-slate-500">vs last period</span>
+                            </div>
+                        </div>
+                        <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 to-teal-400 opacity-50"></div>
+                    </div>
+ 
+                    <!-- Card 3: Margin -->
+                    <div class="dashboard-card card-glow-purple p-6 flex flex-col justify-between relative overflow-hidden group">
+                        <div class="absolute -right-8 -top-8 w-24 h-24 bg-purple-500/10 rounded-full blur-xl group-hover:bg-purple-500/20 transition-all duration-300"></div>
+                        <div class="flex items-center justify-between z-10">
+                            <span class="text-xs font-semibold uppercase tracking-wider text-slate-400">${kpis.avg_margin.title}</span>
+                            <div class="w-8 h-8 rounded-lg bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400">
+                                <span class="material-symbols-outlined text-[18px]">percent</span>
+                            </div>
+                        </div>
+                        <div class="mt-4 z-10">
+                            <div class="text-2xl lg:text-3xl font-bold text-slate-50 tracking-tight font-sans truncate" title="${kpis.avg_margin.value}">${kpis.avg_margin.value}</div>
+                            <div class="flex items-center gap-2 mt-2">
+                                <span class="${kpis.avg_margin.trend === 'up' ? 'badge-trend-up' : 'badge-trend-down'}">${kpis.avg_margin.change}</span>
+                                <span class="text-[10px] text-slate-500">vs last period</span>
+                            </div>
+                        </div>
+                        <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-purple-500 to-pink-500 opacity-50"></div>
+                    </div>
+ 
+                    <!-- Card 4: Products -->
+                    <div class="dashboard-card card-glow-orange p-6 flex flex-col justify-between relative overflow-hidden group">
+                        <div class="absolute -right-8 -top-8 w-24 h-24 bg-orange-500/10 rounded-full blur-xl group-hover:bg-orange-500/20 transition-all duration-300"></div>
+                        <div class="flex items-center justify-between z-10">
+                            <span class="text-xs font-semibold uppercase tracking-wider text-slate-400">${kpis.active_products.title}</span>
+                            <div class="w-8 h-8 rounded-lg bg-orange-500/10 border border-orange-500/20 flex items-center justify-center text-orange-400">
+                                <span class="material-symbols-outlined text-[18px]">inventory_2</span>
+                            </div>
+                        </div>
+                        <div class="mt-4 z-10">
+                            <div class="text-2xl lg:text-3xl font-bold text-slate-50 tracking-tight font-sans truncate" title="${kpis.active_products.value}">${kpis.active_products.value}</div>
+                            <div class="flex items-center gap-2 mt-2">
+                                <span class="${kpis.active_products.trend === 'up' ? 'badge-trend-up' : 'badge-trend-down'}">${kpis.active_products.change}</span>
+                                <span class="text-[10px] text-slate-500">vs last period</span>
+                            </div>
+                        </div>
+                        <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-orange-500 to-amber-500 opacity-50"></div>
+                    </div>
+                `;
+
+                // 2. Render Trends Line Chart
+                const trendCtx = document.getElementById('trend-chart').getContext('2d');
+                
+                // Gradients for elegant fills
+                const revGrad = trendCtx.createLinearGradient(0, 0, 0, 300);
+                revGrad.addColorStop(0, 'rgba(59, 130, 246, 0.22)');
+                revGrad.addColorStop(1, 'rgba(59, 130, 246, 0.00)');
+                
+                const profGrad = trendCtx.createLinearGradient(0, 0, 0, 300);
+                profGrad.addColorStop(0, 'rgba(20, 184, 166, 0.22)');
+                profGrad.addColorStop(1, 'rgba(20, 184, 166, 0.00)');
+                
+                const optData = optimizeChartData(data.sales_trends);
+
+                const trendChart = new Chart(trendCtx, {
+                    type: 'line',
+                    data: {
+                        labels: optData.labels,
+                        datasets: [
+                            {
+                                label: 'Revenue',
+                                data: optData.revenue,
+                                borderColor: '#3B82F6',
+                                backgroundColor: revGrad,
+                                fill: true,
+                                tension: 0.4,
+                                borderWidth: 2.5,
+                                pointRadius: 0,
+                                pointHoverRadius: 6,
+                                pointBackgroundColor: '#3B82F6',
+                                pointBorderColor: '#0B1020',
+                                pointBorderWidth: 2,
+                                hoverBackgroundColor: '#3B82F6'
+                            },
+                            {
+                                label: 'Profit',
+                                data: optData.profit,
+                                borderColor: '#14B8A6',
+                                backgroundColor: profGrad,
+                                fill: true,
+                                tension: 0.4,
+                                borderWidth: 2.5,
+                                pointRadius: 0,
+                                pointHoverRadius: 6,
+                                pointBackgroundColor: '#14B8A6',
+                                pointBorderColor: '#0B1020',
+                                pointBorderWidth: 2,
+                                hoverBackgroundColor: '#14B8A6'
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        interaction: {
+                            intersect: false,
+                            mode: 'index'
+                        },
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                                align: 'end',
+                                labels: {
+                                    color: '#94A3B8',
+                                    boxWidth: 10,
+                                    boxHeight: 10,
+                                    usePointStyle: true,
+                                    pointStyle: 'circle',
+                                    font: { family: 'Inter', size: 12, weight: 500 }
+                                }
+                            },
+                            tooltip: {
+                                backgroundColor: 'rgba(18, 26, 47, 0.95)',
+                                titleColor: '#F8FAFC',
+                                bodyColor: '#94A3B8',
+                                borderColor: 'rgba(255, 255, 255, 0.08)',
+                                borderWidth: 1,
+                                padding: 12,
+                                boxPadding: 6,
+                                usePointStyle: true,
+                                callbacks: {
+                                    label: function(context) {
+                                        let label = context.dataset.label || '';
+                                        if (label) {
+                                            label += ': ';
+                                        }
+                                        if (context.parsed.y !== null) {
+                                            label += formatCurrency(context.parsed.y);
+                                        }
+                                        return label;
+                                    }
+                                }
+                            },
+                            zoom: {
+                                zoom: {
+                                    wheel: {
+                                        enabled: true,
+                                        speed: 0.05
+                                    },
+                                    pinch: {
+                                        enabled: true
+                                    },
+                                    mode: 'x',
+                                },
+                                pan: {
+                                    enabled: true,
+                                    mode: 'x',
+                                    threshold: 10
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                grid: {
+                                    display: false
+                                },
+                                ticks: {
+                                    color: '#64748B',
+                                    maxTicksLimit: 12,
+                                    font: { family: 'Inter', size: 10, weight: 500 }
+                                }
+                            },
+                            y: {
+                                grid: {
+                                    color: 'rgba(255, 255, 255, 0.03)',
+                                    borderDash: [5, 5]
+                                },
+                                ticks: {
+                                    color: '#64748B',
+                                    font: { family: 'Inter', size: 10 },
+                                    callback: function(value) {
+                                        if (value >= 1000000) return '₹' + (value / 1000000).toFixed(1) + 'M';
+                                        if (value >= 1000) return '₹' + (value / 1000) + 'k';
+                                        return '₹' + value;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+
+                document.getElementById('reset-zoom-btn').addEventListener('click', () => {
+                    trendChart.resetZoom();
+                });
+
+                // 3. Render Category Share Doughnut Chart
+                const catCtx = document.getElementById('category-chart').getContext('2d');
+                const catColors = getCategoryPalette(data.category_share.map(c => c.category));
+                const totalRevenue = data.category_share.reduce((acc, c) => acc + safeNum(c.revenue), 0);
+
+                new Chart(catCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: data.category_share.map(c => c.category),
+                        datasets: [{
+                            data: data.category_share.map(c => c.revenue),
+                            backgroundColor: data.category_share.map(c => catColors[c.category]),
+                            borderWidth: 2,
+                            borderColor: '#121A2F'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        cutout: '75%',
+                        onClick: (event, activeElements) => {
+                            if (activeElements.length > 0) {
+                                const index = activeElements[0].index;
+                                const categoryName = data.category_share[index].category;
+                                filterByCategory(categoryName);
+                            }
+                        },
+                        onHover: (event, chartElement) => {
+                            event.chart.canvas.style.cursor = chartElement.length ? 'pointer' : 'default';
+                        },
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    color: '#94A3B8',
+                                    boxWidth: 8,
+                                    usePointStyle: true,
+                                    pointStyle: 'circle',
+                                    font: { family: 'Inter', size: 11, weight: 500 },
+                                    padding: 15
+                                }
+                            },
+                            tooltip: {
+                                backgroundColor: 'rgba(18, 26, 47, 0.95)',
+                                titleColor: '#F8FAFC',
+                                bodyColor: '#94A3B8',
+                                borderColor: 'rgba(255, 255, 255, 0.08)',
+                                borderWidth: 1,
+                                padding: 12,
+                                boxPadding: 6,
+                                usePointStyle: true,
+                                callbacks: {
+                                    label: function(context) {
+                                        let label = context.label || '';
+                                        if (label) {
+                                            label += ': ';
+                                        }
+                                        if (context.parsed !== null) {
+                                            const pct = totalRevenue > 0 ? ((context.parsed / totalRevenue) * 100).toFixed(1) : '0';
+                                            label += `${formatCurrency(context.parsed)} (${pct}%)`;
+                                        }
+                                        return label;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+
+                // 4. Render Products Table
+                const allTopProducts = data.top_products;
+
+                function renderProductsTable(productsList) {
+                    const tbody = document.getElementById('top-products-body');
+                    if (productsList.length === 0) {
+                        tbody.innerHTML = `<tr><td colspan="5" class="px-4 py-8 text-center text-slate-500 font-medium">No products match this category.</td></tr>`;
+                        return;
+                    }
+                    
+                    let rows = '';
+                    productsList.forEach(p => {
+                        const colorHex = catColors[p.category] || '#64748B';
+                        rows += `
+                            <tr class="hover-highlight border-b border-white/5 transition-colors group">
+                                <td class="px-4 py-4 text-sm font-semibold text-slate-100">${p.product_name}</td>
+                                <td class="px-4 py-4 text-xs font-medium text-slate-400">
+                                    <div class="flex items-center gap-2">
+                                        <span class="category-dot" style="background-color: ${colorHex}"></span>
+                                        <span>${p.category}</span>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-4 text-xs text-right font-mono text-slate-300">${p.quantity_sold.toLocaleString()}</td>
+                                <td class="px-4 py-4 text-xs text-right font-mono font-medium text-slate-100">${formatCurrency(p.revenue)}</td>
+                                <td class="px-4 py-4 text-xs text-right font-mono font-semibold text-emerald-400">${formatCurrency(p.profit)}</td>
+                            </tr>
+                        `;
+                    });
+                    tbody.innerHTML = rows;
+                }
+
+                window.filterByCategory = (categoryName) => {
+                    const filtered = allTopProducts.filter(p => p.category === categoryName);
+                    renderProductsTable(filtered);
+                    
+                    const filterBadge = document.getElementById('active-category-filter');
+                    const categorySpan = document.getElementById('filter-category-name');
+                    categorySpan.innerText = categoryName;
+                    filterBadge.classList.remove('hidden');
+                };
+
+                window.clearCategoryFilter = () => {
+                    renderProductsTable(allTopProducts);
+                    const filterBadge = document.getElementById('active-category-filter');
+                    filterBadge.classList.add('hidden');
+                };
+
+                renderProductsTable(allTopProducts);
+            } catch (error) {
+                console.error(error);
+                document.getElementById('kpi-grid').innerHTML = `<div class="bg-error/10 border border-error/20 text-error p-6 rounded-2xl col-span-4 text-sm shadow-lg">Failed to load overview analytics metrics: ${error.message}</div>`;
+            }
+
+            document.getElementById('export-csv-btn').addEventListener('click', () => {
+                window.location.href = '/pages/reports.html';
+            });
+        });
+    </script>
+</body>
+</html>

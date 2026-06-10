@@ -1,0 +1,344 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* Color Variables - Stripe/Linear Inspired SaaS Dark Palette */
+:root {
+    --bg-primary: #050811;       /* Deep matte blackish blue */
+    --bg-secondary: #0B0F19;     /* Sidebar / Solid distinct dark */
+    --bg-card: #101625;          /* Solid distinct cards */
+    --bg-card-elevated: #141C2F; /* Chart containers / details */
+    --border-color: rgba(255, 255, 255, 0.07);
+    --border-color-light: rgba(255, 255, 255, 0.04);
+    
+    --primary: #3B82F6;
+    --accent-cyan: #14B8A6;
+    --success: #22C55E;
+    --warning: #F59E0B;
+    --error: #EF4444;
+    
+    --text-primary: #F8FAFC;
+    --text-secondary: #94A3B8;
+    --text-muted: #64748B;
+    --bg-hover-surface: rgba(255, 255, 255, 0.03);
+    
+    --font-inter: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+body {
+    font-family: var(--font-inter);
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    min-height: 100vh;
+    overflow-y: auto;
+    scroll-behavior: smooth;
+    letter-spacing: -0.011em;
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+::-webkit-scrollbar-track {
+    background: var(--bg-primary);
+}
+::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: var(--primary);
+}
+
+/* Card elevations & hover effects - Premium Visual Depth */
+.dashboard-card {
+    background: var(--bg-card);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--border-color);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.dashboard-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(255, 255, 255, 0.12);
+    box-shadow: 0 16px 40px 0 rgba(0, 0, 0, 0.4), 0 0 1px 1px rgba(255, 255, 255, 0.05);
+}
+
+.card-elevated {
+    background: rgba(18, 26, 47, 0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--border-color-light);
+    box-shadow: 0 12px 32px -4px rgba(0, 0, 0, 0.4);
+}
+
+/* Custom glows for KPI cards */
+.card-glow-blue {
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3), 0 0 25px rgba(59, 130, 246, 0.03);
+}
+.card-glow-blue:hover {
+    box-shadow: 0 16px 40px 0 rgba(0, 0, 0, 0.4), 0 0 30px rgba(59, 130, 246, 0.12), inset 0 0 0 1px rgba(59, 130, 246, 0.2);
+    border-color: rgba(59, 130, 246, 0.25);
+}
+
+.card-glow-emerald {
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3), 0 0 25px rgba(34, 197, 94, 0.03);
+}
+.card-glow-emerald:hover {
+    box-shadow: 0 16px 40px 0 rgba(0, 0, 0, 0.4), 0 0 30px rgba(34, 197, 94, 0.12), inset 0 0 0 1px rgba(34, 197, 94, 0.2);
+    border-color: rgba(34, 197, 94, 0.25);
+}
+
+.card-glow-purple {
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3), 0 0 25px rgba(168, 85, 247, 0.03);
+}
+.card-glow-purple:hover {
+    box-shadow: 0 16px 40px 0 rgba(0, 0, 0, 0.4), 0 0 30px rgba(168, 85, 247, 0.12), inset 0 0 0 1px rgba(168, 85, 247, 0.2);
+    border-color: rgba(168, 85, 247, 0.25);
+}
+
+.card-glow-orange {
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3), 0 0 25px rgba(249, 115, 22, 0.03);
+}
+.card-glow-orange:hover {
+    box-shadow: 0 16px 40px 0 rgba(0, 0, 0, 0.4), 0 0 30px rgba(249, 115, 22, 0.12), inset 0 0 0 1px rgba(249, 115, 22, 0.2);
+    border-color: rgba(249, 115, 22, 0.25);
+}
+
+/* Sidebar navigation item styling */
+.sidebar-nav-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 16px;
+    border-radius: 12px;
+    color: var(--text-secondary);
+    font-weight: 500;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid transparent;
+}
+.sidebar-nav-item:hover {
+    color: var(--text-primary);
+    background-color: rgba(255, 255, 255, 0.03);
+    transform: translateX(4px);
+}
+.sidebar-nav-item.active {
+    color: var(--text-primary);
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.12) 0%, rgba(20, 184, 166, 0.08) 100%);
+    border-color: rgba(59, 130, 246, 0.15);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3), 0 0 12px rgba(59, 130, 246, 0.1), inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+    font-weight: 600;
+}
+
+/* Inputs styling overrides */
+input, select, textarea {
+    background-color: rgba(11, 18, 32, 0.8) !important;
+    border: 1px solid var(--border-color) !important;
+    color: var(--text-primary) !important;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease !important;
+}
+
+input:focus, select:focus, textarea:focus {
+    border-color: var(--primary) !important;
+    outline: none !important;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.25) !important;
+}
+
+/* Custom range slider styling */
+input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 6px;
+    background: var(--bg-sidebar);
+    border-radius: 9999px;
+    border: 1px solid var(--border-color);
+    outline: none;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--primary);
+    cursor: pointer;
+    border: 2px solid #F8FAFC;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+    transition: transform 0.1s ease, background-color 0.15s ease;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+    background: var(--accent-cyan);
+    box-shadow: 0 0 8px rgba(34, 211, 238, 0.6);
+}
+
+input[type="range"]::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--primary);
+    cursor: pointer;
+    border: 2px solid #F8FAFC;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+    transition: transform 0.1s ease, background-color 0.15s ease;
+}
+
+input[type="range"]::-moz-range-thumb:hover {
+    transform: scale(1.2);
+    background: var(--accent-cyan);
+    box-shadow: 0 0 8px rgba(34, 211, 238, 0.6);
+}
+
+/* Custom scroll area wrapper */
+.scroll-container {
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Alternate table row styling */
+tr.alternate-row:nth-child(even) {
+    background-color: rgba(22, 32, 51, 0.3);
+}
+tr.alternate-row:nth-child(odd) {
+    background-color: rgba(11, 18, 32, 0.15);
+}
+tr.alternate-row:hover {
+    background-color: rgba(30, 45, 93, 0.25) !important;
+}
+
+/* Delta Pills badges */
+.badge-trend-up {
+    color: var(--success);
+    background-color: rgba(16, 185, 129, 0.12);
+    border: 1px solid rgba(16, 185, 129, 0.25);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    font-family: monospace;
+}
+.badge-trend-down {
+    color: var(--error);
+    background-color: rgba(239, 68, 68, 0.12);
+    border: 1px solid rgba(239, 68, 68, 0.25);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    font-family: monospace;
+}
+
+/* Sidebar active state icon accents */
+.sidebar-nav-item.active span.material-symbols-outlined {
+    color: #22D3EE;
+    font-variation-settings: 'FILL' 1;
+}
+
+/* Category indicator dots in tables */
+.category-dot {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 9999px;
+    margin-right: 6px;
+}
+.dot-biryani { background-color: #3B82F6; }
+.dot-pizza { background-color: #14B8A6; }
+.dot-burger { background-color: #8B5CF6; }
+.dot-chinese { background-color: #F97316; }
+.dot-sushi { background-color: #EF4444; }
+.dot-pasta { background-color: #10B981; }
+.dot-beverage { background-color: #EC4899; }
+.dot-dessert { background-color: #F59E0B; }
+.dot-salad { background-color: #84CC16; }
+.dot-general { background-color: #64748B; }
+
+/* Table Interactive Highlights */
+tr.hover-highlight {
+    transition: background-color 0.15s ease, transform 0.15s ease;
+}
+tr.hover-highlight:hover {
+    background-color: rgba(59, 130, 246, 0.04) !important;
+}
+
+/* Active Highlight Outline */
+.active-highlight {
+    border-left: 3px solid #3B82F6;
+    padding-left: 13px !important;
+}
+
+/* Dynamic Accent Badges */
+.badge-processed {
+    color: #10B981;
+    background-color: rgba(16, 185, 129, 0.12);
+    border: 1px solid rgba(16, 185, 129, 0.25);
+    padding: 2px 8px;
+    border-radius: 9999px;
+    font-size: 10px;
+    font-weight: 600;
+}
+.badge-failed {
+    color: #EF4444;
+    background-color: rgba(239, 68, 68, 0.12);
+    border: 1px solid rgba(239, 68, 68, 0.25);
+    padding: 2px 8px;
+    border-radius: 9999px;
+    font-size: 10px;
+    font-weight: 600;
+}
+.badge-processing {
+    color: #3B82F6;
+    background-color: rgba(59, 130, 246, 0.12);
+    border: 1px solid rgba(59, 130, 246, 0.25);
+    padding: 2px 8px;
+    border-radius: 9999px;
+    font-size: 10px;
+    font-weight: 600;
+}
+
+/* Category Specific Text Colors */
+.text-category-biryani { color: #3B82F6; }
+.text-category-pizza { color: #14B8A6; }
+.text-category-burger { color: #8B5CF6; }
+.text-category-chinese { color: #F97316; }
+.text-category-sushi { color: #EF4444; }
+.text-category-pasta { color: #10B981; }
+.text-category-beverage { color: #EC4899; }
+.text-category-dessert { color: #F59E0B; }
+.text-category-salad { color: #84CC16; }
+.text-category-general { color: #64748B; }
+
+/* Category Specific Badges */
+.badge-category-biryani { color: #3B82F6; background-color: rgba(59, 130, 246, 0.12); border: 1px solid rgba(59, 130, 246, 0.25); }
+.badge-category-pizza { color: #14B8A6; background-color: rgba(20, 184, 166, 0.12); border: 1px solid rgba(20, 184, 166, 0.25); }
+.badge-category-burger { color: #8B5CF6; background-color: rgba(139, 92, 246, 0.12); border: 1px solid rgba(139, 92, 246, 0.25); }
+.badge-category-chinese { color: #F97316; background-color: rgba(249, 115, 22, 0.12); border: 1px solid rgba(249, 115, 22, 0.25); }
+.badge-category-sushi { color: #EF4444; background-color: rgba(239, 68, 68, 0.12); border: 1px solid rgba(239, 68, 68, 0.25); }
+.badge-category-pasta { color: #10B981; background-color: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.25); }
+.badge-category-beverage { color: #EC4899; background-color: rgba(236, 72, 153, 0.12); border: 1px solid rgba(236, 72, 153, 0.25); }
+.badge-category-dessert { color: #F59E0B; background-color: rgba(245, 158, 11, 0.12); border: 1px solid rgba(245, 158, 11, 0.25); }
+.badge-category-salad { color: #84CC16; background-color: rgba(132, 204, 22, 0.12); border: 1px solid rgba(132, 204, 22, 0.25); }
+.badge-category-general { color: #64748B; background-color: rgba(100, 116, 139, 0.12); border: 1px solid rgba(100, 116, 139, 0.25); }
+
+/* Interactive Hover Cursor Indicators */
+.clickable-element {
+    cursor: pointer !important;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.clickable-element:hover {
+    filter: brightness(1.1);
+    transform: scale(1.02);
+}
+
+@keyframes soft-pulse-blue {
+    0%, 100% { box-shadow: 0 0 10px rgba(59, 130, 246, 0.2); }
+    50% { box-shadow: 0 0 20px rgba(59, 130, 246, 0.5); }
+}
+.pulse-blue {
+    animation: soft-pulse-blue 2.5s infinite ease-in-out;
+}
+

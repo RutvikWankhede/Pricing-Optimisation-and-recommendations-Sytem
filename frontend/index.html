@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>PriceSense Analytics | Sign In</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <link href="/css/styles.css" rel="stylesheet"/>
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-tertiary-container": "#F8FAFC",
+                    "surface-container-highest": "#1E293B",
+                    "error-container": "rgba(239, 68, 68, 0.15)",
+                    "surface-bright": "#1E293B",
+                    "outline-variant": "#334155",
+                    "on-background": "#F8FAFC",
+                    "secondary": "#22D3EE",
+                    "on-secondary-container": "#22D3EE",
+                    "tertiary-container": "rgba(148, 163, 184, 0.1)",
+                    "inverse-on-surface": "#081225",
+                    "inverse-primary": "#3B82F6",
+                    "on-primary-container": "#3B82F6",
+                    "background": "#081225",
+                    "error": "#EF4444",
+                    "on-primary": "#F8FAFC",
+                    "tertiary": "#94A3B8",
+                    "on-surface": "#F8FAFC",
+                    "on-tertiary": "#F8FAFC",
+                    "tertiary-fixed": "#94A3B8",
+                    "on-primary-fixed": "#F8FAFC",
+                    "on-error": "#F8FAFC",
+                    "on-secondary-fixed": "#F8FAFC",
+                    "secondary-container": "rgba(34, 211, 238, 0.15)",
+                    "surface-container": "#162033",
+                    "surface": "#081225",
+                    "on-primary-fixed-variant": "#3B82F6",
+                    "primary-container": "rgba(59, 130, 246, 0.15)",
+                    "secondary-fixed": "#22D3EE",
+                    "surface-tint": "#3B82F6",
+                    "surface-container-lowest": "#081225",
+                    "primary-fixed-dim": "#3B82F6",
+                    "surface-dim": "#081225",
+                    "outline": "#334155",
+                    "secondary-fixed-dim": "#22D3EE",
+                    "on-secondary-fixed-variant": "#22D3EE",
+                    "surface-container-high": "#1E293B",
+                    "inverse-surface": "#F8FAFC",
+                    "on-error-container": "#EF4444",
+                    "primary-fixed": "#3B82F6",
+                    "primary": "#3B82F6",
+                    "surface-container-low": "#0F172A",
+                    "on-tertiary-fixed": "#F8FAFC",
+                    "surface-variant": "#162033",
+                    "on-tertiary-fixed-variant": "#94A3B8",
+                    "tertiary-fixed-dim": "#94A3B8",
+                    "on-secondary": "#F8FAFC",
+                    "on-surface-variant": "#94A3B8"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.375rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "2xl": "1rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "xl": "40px",
+                    "xs": "4px",
+                    "sm": "8px",
+                    "md": "16px",
+                    "margin": "24px",
+                    "lg": "24px",
+                    "base": "4px",
+                    "gutter": "16px"
+            },
+            "fontFamily": {
+                    "headline-lg": ["Inter"],
+                    "headline-md": ["Inter"],
+                    "body-md": ["Inter"],
+                    "label-md": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "label-sm": ["Inter"],
+                    "display-lg": ["Inter"]
+            },
+            "fontSize": {
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "500"}],
+                    "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                    "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "label-sm": ["11px", {"lineHeight": "14px", "fontWeight": "600"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+    <style>
+      body {
+        font-family: 'Inter', sans-serif;
+        background-color: #081225;
+      }
+    </style>
+</head>
+<body class="bg-background text-on-surface flex items-center justify-center min-h-screen p-md">
+
+    <div class="w-full max-w-md bg-surface-container border border-outline p-lg rounded-2xl flex flex-col gap-md shadow-2xl shadow-black/40">
+        <!-- Logo Branding -->
+        <div class="flex flex-col items-center gap-sm text-center mb-xs">
+            <div class="w-12 h-12 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/25">
+                <span class="material-symbols-outlined text-on-surface text-[28px]" style="font-variation-settings: 'FILL' 1;">analytics</span>
+            </div>
+            <div>
+                <h1 class="font-headline-lg text-headline-lg text-on-surface font-extrabold tracking-tight mt-sm">PriceSense</h1>
+                <p class="font-body-md text-body-md text-tertiary mt-xs font-medium">ML Pricing Analytics System</p>
+            </div>
+        </div>
+
+        <!-- Alert messages -->
+        <div id="alert-box" class="hidden p-md rounded bg-error-container border border-error/20 text-error flex items-start gap-sm shadow-sm transition-all duration-200">
+            <span class="material-symbols-outlined text-[20px]" id="alert-icon">warning</span>
+            <p class="font-body-md text-body-md" id="alert-message"></p>
+        </div>
+
+        <!-- Login Card Form -->
+        <div id="login-view" class="transition-all duration-300">
+            <form id="login-form" class="flex flex-col gap-md">
+                <div class="flex flex-col gap-xs">
+                    <label class="font-label-md text-label-md text-tertiary font-semibold tracking-wide">Email Address</label>
+                    <input type="email" id="login-email" required placeholder="analyst@pricing.ai" class="bg-background border border-outline rounded-xl px-md py-sm font-body-md text-body-md text-on-surface focus:ring-2 focus:ring-[#3B82F6]/25 focus:border-primary outline-none transition-all placeholder:text-tertiary/30"/>
+                </div>
+                <div class="flex flex-col gap-xs">
+                    <label class="font-label-md text-label-md text-tertiary font-semibold tracking-wide">Password</label>
+                    <input type="password" id="login-password" required placeholder="••••••••" class="bg-background border border-outline rounded-xl px-md py-sm font-body-md text-body-md text-on-surface focus:ring-2 focus:ring-[#3B82F6]/25 focus:border-primary outline-none transition-all placeholder:text-tertiary/30"/>
+                </div>
+                <button type="submit" id="login-submit" class="bg-primary text-on-surface font-semibold py-sm rounded-xl hover:scale-[1.01] active:scale-95 hover:shadow-lg hover:shadow-primary/10 transition-all duration-150 flex items-center justify-center gap-sm mt-xs">
+                    <span>Sign In</span>
+                </button>
+            </form>
+            <div class="mt-lg text-center border-t border-outline/20 pt-md">
+                <p class="font-body-md text-body-md text-tertiary">
+                    Need an analyst account? 
+                    <button id="show-signup" class="text-primary hover:underline font-bold ml-xs">Create Account</button>
+                </p>
+            </div>
+        </div>
+
+        <!-- Signup Card Form -->
+        <div id="signup-view" class="hidden transition-all duration-300">
+            <form id="signup-form" class="flex flex-col gap-md">
+                <div class="flex flex-col gap-xs">
+                    <label class="font-label-md text-label-md text-tertiary font-semibold tracking-wide">Full Name</label>
+                    <input type="text" id="signup-name" required placeholder="Jane Doe" class="bg-background border border-outline rounded-xl px-md py-sm font-body-md text-body-md text-on-surface focus:ring-2 focus:ring-[#3B82F6]/25 focus:border-primary outline-none transition-all placeholder:text-tertiary/30"/>
+                </div>
+                <div class="flex flex-col gap-xs">
+                    <label class="font-label-md text-label-md text-tertiary font-semibold tracking-wide">Email Address</label>
+                    <input type="email" id="signup-email" required placeholder="jane.doe@example.com" class="bg-background border border-outline rounded-xl px-md py-sm font-body-md text-body-md text-on-surface focus:ring-2 focus:ring-[#3B82F6]/25 focus:border-primary outline-none transition-all placeholder:text-tertiary/30"/>
+                </div>
+                <div class="flex flex-col gap-xs">
+                    <label class="font-label-md text-label-md text-tertiary font-semibold tracking-wide">Password</label>
+                    <input type="password" id="signup-password" required placeholder="Minimum 6 characters" class="bg-background border border-outline rounded-xl px-md py-sm font-body-md text-body-md text-on-surface focus:ring-2 focus:ring-[#3B82F6]/25 focus:border-primary outline-none transition-all placeholder:text-tertiary/30"/>
+                </div>
+                <button type="submit" id="signup-submit" class="bg-primary text-on-surface font-semibold py-sm rounded-xl hover:scale-[1.01] active:scale-95 hover:shadow-lg hover:shadow-primary/10 transition-all duration-150 flex items-center justify-center gap-sm mt-xs">
+                    <span>Register Account</span>
+                </button>
+            </form>
+            <div class="mt-lg text-center border-t border-outline/20 pt-md">
+                <p class="font-body-md text-body-md text-tertiary">
+                    Already have an account? 
+                    <button id="show-login" class="text-primary hover:underline font-bold ml-xs">Sign In</button>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script triggers -->
+    <script src="/js/app.js"></script>
+    <script>
+        const showSignupBtn = document.getElementById('show-signup');
+        const showLoginBtn = document.getElementById('show-login');
+        const loginView = document.getElementById('login-view');
+        const signupView = document.getElementById('signup-view');
+        const alertBox = document.getElementById('alert-box');
+        const alertMessage = document.getElementById('alert-message');
+        const alertIcon = document.getElementById('alert-icon');
+
+        function showAlert(msg, type = 'error') {
+            if (type === 'error') {
+                alertBox.className = 'p-md rounded bg-error/10 border border-error/20 text-error flex items-start gap-sm shadow-sm';
+                alertIcon.innerText = 'warning';
+            } else {
+                alertBox.className = 'p-md rounded bg-[#10B981]/10 border border-success/20 text-success flex items-start gap-sm shadow-sm';
+                alertIcon.innerText = 'check_circle';
+            }
+            alertMessage.innerText = msg;
+            alertBox.classList.remove('hidden');
+        }
+
+        showSignupBtn.addEventListener('click', () => {
+            loginView.classList.add('hidden');
+            signupView.classList.remove('hidden');
+            alertBox.classList.add('hidden');
+        });
+
+        showLoginBtn.addEventListener('click', () => {
+            signupView.classList.add('hidden');
+            loginView.classList.remove('hidden');
+            alertBox.classList.add('hidden');
+        });
+
+        // Submit Login Form
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            
+            const submitBtn = document.getElementById('login-submit');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span>Verifying...</span>';
+
+            try {
+                const response = await fetch('/api/v1/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+
+                if (!response.ok) {
+                    const err = await response.json();
+                    throw new Error(err.detail || 'Authentication failed.');
+                }
+
+                const data = await response.json();
+                setAuthToken(data.access_token);
+
+                // Load User profile info
+                const userResponse = await fetch('/api/v1/auth/me', {
+                    headers: { 'Authorization': `Bearer ${data.access_token}` }
+                });
+                const userData = await userResponse.json();
+                setCurrentUser(userData);
+
+                showAlert('Success! Redirecting...', 'success');
+                setTimeout(() => {
+                    window.location.href = '/pages/dashboard.html';
+                }, 800);
+            } catch (error) {
+                showAlert(error.message);
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<span>Sign In</span>';
+            }
+        });
+
+        // Submit Signup Form
+        document.getElementById('signup-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const fullName = document.getElementById('signup-name').value;
+            const email = document.getElementById('signup-email').value;
+            const password = document.getElementById('signup-password').value;
+
+            if (password.length < 6) {
+                showAlert('Password must be at least 6 characters.');
+                return;
+            }
+
+            const submitBtn = document.getElementById('signup-submit');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span>Creating...</span>';
+
+            try {
+                const response = await fetch('/api/v1/auth/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ full_name: fullName, email, password, role: 'analyst' })
+                });
+
+                if (!response.ok) {
+                    const err = await response.json();
+                    throw new Error(err.detail || 'Registration failed.');
+                }
+
+                showAlert('Account created successfully! Please sign in.', 'success');
+                setTimeout(() => {
+                    signupView.classList.add('hidden');
+                    loginView.classList.remove('hidden');
+                    document.getElementById('login-email').value = email;
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<span>Register Account</span>';
+                }, 1000);
+            } catch (error) {
+                showAlert(error.message);
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<span>Register Account</span>';
+            }
+        });
+
+        // Check if user is already authenticated
+        (async () => {
+            const token = getAuthToken();
+            if (token) {
+                window.location.href = '/pages/dashboard.html';
+            }
+        })();
+    </script>
+</body>
+</html>

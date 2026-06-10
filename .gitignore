@@ -1,0 +1,38 @@
+# Virtual Environment
+.venv/
+venv/
+ENV/
+
+# Python Cache
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# Databases & Credentials
+.env
+pricing_ai.db
+backend/pricing_ai.db
+
+# Dynamic Datasets uploads
+datasets/raw/*
+!datasets/raw/.gitkeep
+datasets/processed/*
+!datasets/processed/.gitkeep
+
+# Reports Output
+reports/pdf/*
+!reports/pdf/.gitkeep
+reports/excel/*
+!reports/excel/.gitkeep
+
+# IDE Settings
+.vscode/
+.idea/
+.antigravity/
+.gemini/
+  
+
+node_modules/
+dist/
+build/

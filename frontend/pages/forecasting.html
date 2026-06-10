@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Demand Forecasting | PriceSense</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <link href="/css/styles.css" rel="stylesheet"/>
+    <!-- Chart.js via CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom"></script>
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-tertiary-container": "#F8FAFC",
+                    "surface-container-highest": "#1E293B",
+                    "error-container": "rgba(239, 68, 68, 0.15)",
+                    "surface-bright": "#1E293B",
+                    "outline-variant": "rgba(255, 255, 255, 0.05)",
+                    "on-background": "#F8FAFC",
+                    "secondary": "#22D3EE",
+                    "on-secondary-container": "#22D3EE",
+                    "tertiary-container": "rgba(148, 163, 184, 0.1)",
+                    "inverse-on-surface": "#060913",
+                    "inverse-primary": "#3B82F6",
+                    "on-primary-container": "#3B82F6",
+                    "background": "#060913",
+                    "error": "#EF4444",
+                    "on-primary": "#F8FAFC",
+                    "tertiary": "#94A3B8",
+                    "on-surface": "#F8FAFC",
+                    "on-tertiary": "#F8FAFC",
+                    "tertiary-fixed": "#94A3B8",
+                    "on-primary-fixed": "#F8FAFC",
+                    "on-error": "#F8FAFC",
+                    "on-secondary-fixed": "#F8FAFC",
+                    "secondary-container": "rgba(34, 211, 238, 0.15)",
+                    "surface-container": "#101625",
+                    "surface": "#060913",
+                    "on-primary-fixed-variant": "#3B82F6",
+                    "primary-container": "rgba(59, 130, 246, 0.15)",
+                    "secondary-fixed": "#22D3EE",
+                    "surface-tint": "#3B82F6",
+                    "surface-container-lowest": "#060913",
+                    "primary-fixed-dim": "#3B82F6",
+                    "surface-dim": "#060913",
+                    "outline": "rgba(255, 255, 255, 0.07)",
+                    "secondary-fixed-dim": "#22D3EE",
+                    "on-secondary-fixed-variant": "#22D3EE",
+                    "surface-container-high": "#141C2F",
+                    "inverse-surface": "#F8FAFC",
+                    "on-error-container": "#EF4444",
+                    "primary-fixed": "#3B82F6",
+                    "primary": "#3B82F6",
+                    "surface-container-low": "#0B0F19",
+                    "on-tertiary-fixed": "#F8FAFC",
+                    "surface-variant": "#101625",
+                    "on-tertiary-fixed-variant": "#94A3B8",
+                    "tertiary-fixed-dim": "#94A3B8",
+                    "on-secondary": "#F8FAFC",
+                    "on-surface-variant": "#94A3B8"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.375rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "2xl": "1rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "xl": "40px",
+                    "xs": "4px",
+                    "sm": "8px",
+                    "md": "16px",
+                    "margin": "24px",
+                    "lg": "24px",
+                    "base": "4px",
+                    "gutter": "16px"
+            },
+            "fontFamily": {
+                    "headline-lg": ["Inter"],
+                    "headline-md": ["Inter"],
+                    "body-md": ["Inter"],
+                    "label-md": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "label-sm": ["Inter"],
+                    "display-lg": ["Inter"]
+            },
+            "fontSize": {
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "500"}],
+                    "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                    "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "label-sm": ["11px", {"lineHeight": "14px", "fontWeight": "600"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+    <style>
+      body {
+        font-family: 'Inter', sans-serif;
+        background-color: #081225;
+      }
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      .custom-scrollbar::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #334155;
+        border-radius: 9999px;
+      }
+    </style>
+</head>
+<body class="flex min-h-screen text-on-surface bg-background">
+    <!-- SideNavBar -->
+    <aside id="sidebar-placeholder" class="hidden md:flex h-screen w-64 flex-col bg-surface-container-low border-r border-outline py-md px-sm gap-xs flex-shrink-0 sticky top-0 z-50"></aside>
+
+    <!-- Main Content Canvas -->
+    <main class="flex-1 flex flex-col min-h-screen overflow-x-hidden">
+        <!-- TopNavBar -->
+        <header class="w-full h-16 flex justify-between items-center px-lg bg-surface-container-low/90 backdrop-blur-md border-b border-outline sticky top-0 z-40 flex-shrink-0">
+            <div class="flex items-center gap-lg">
+                <button id="mobile-menu-toggle" class="md:hidden p-sm text-tertiary hover:text-on-surface hover:bg-surface-container rounded-lg transition-all duration-200 mr-xs flex items-center justify-center bg-transparent border-none outline-none cursor-pointer">
+                    <span class="material-symbols-outlined">menu</span>
+                </button>
+                <h1 class="font-headline-md text-headline-md font-bold text-on-surface">Demand Forecasting</h1>
+            </div>
+            <div class="flex items-center gap-md">
+                <div class="relative hidden sm:block">
+                    <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-tertiary text-[20px]">search</span>
+                    <input class="bg-background border border-outline rounded-xl px-10 py-1.5 text-body-md focus:ring-2 focus:ring-[#3B82F6]/25 focus:border-primary outline-none transition-all w-64 text-on-surface" placeholder="Search data points..." type="text"/>
+                </div>
+                <button class="p-2 text-tertiary hover:text-on-surface hover:bg-surface-container rounded-full transition-all duration-200">
+                    <span class="material-symbols-outlined">notifications</span>
+                </button>
+                <button class="p-2 text-tertiary hover:text-on-surface hover:bg-surface-container rounded-full transition-all duration-200">
+                    <span class="material-symbols-outlined">settings</span>
+                </button>
+                <div class="h-8 w-px bg-[#334155] mx-xs"></div>
+                <div class="flex items-center gap-sm" id="user-profile-header">
+                    <div class="w-8 h-8 rounded-full bg-primary text-on-surface flex items-center justify-center font-bold text-xs" id="user-avatar-placeholder">A</div>
+                    <div class="hidden lg:block text-left">
+                        <p class="font-label-md text-label-md text-on-surface leading-none" id="user-name-placeholder">A. Sterling</p>
+                        <p class="font-label-sm text-label-sm text-tertiary opacity-70 mt-1" id="user-role-placeholder">Senior Strategist</p>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="flex-1 p-lg space-y-lg max-w-7xl w-full mx-auto">
+            
+            <!-- Product Selector Card -->
+            <div class="dashboard-card p-md rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-md">
+                <div>
+                    <h2 class="font-headline-md text-headline-md text-on-surface font-bold">ML-Based Demand Projections</h2>
+                    <p class="font-body-md text-body-md text-tertiary mt-xs font-medium">Fit regressions onto historical sales to forecast daily volumes for the next 30 days.</p>
+                </div>
+                <div class="flex items-center gap-sm">
+                    <label class="font-label-md text-label-md text-tertiary font-bold uppercase tracking-wider whitespace-nowrap">Select Product SKU:</label>
+                    <select id="product-select" class="bg-background border border-outline rounded-xl px-md py-sm font-body-md text-body-md text-on-surface focus:ring-2 focus:ring-[#3B82F6]/25 focus:border-primary outline-none transition-all w-64">
+                        <option value="">Loading active products...</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Empty State -->
+            <section id="empty-state" class="card-elevated rounded-2xl p-xl text-center flex flex-col items-center justify-center min-h-[300px]">
+                <div class="w-16 h-16 rounded-full bg-surface-container-low border border-outline flex items-center justify-center mb-md shadow-md">
+                    <span class="material-symbols-outlined text-primary text-[32px]">trending_up</span>
+                </div>
+                <h3 class="font-headline-md text-headline-md text-on-surface font-bold">No Product Selected</h3>
+                <p class="font-body-md text-body-md text-tertiary max-w-md mt-sm font-medium">Choose an active product from the drop-down menu above to execute the forecasting pipeline and display historical transaction metrics vs future ML-predicted demands.</p>
+            </section>
+
+            <!-- Analytics view (hidden by default) -->
+            <div id="analytics-view" class="hidden space-y-lg">
+                <!-- KPI metrics -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-lg">
+                    <div class="dashboard-card p-lg rounded-2xl flex flex-col justify-between min-h-[140px]">
+                        <div class="flex justify-between items-center text-tertiary text-[11px] font-bold uppercase tracking-wider">
+                            <span>Regression Model</span>
+                            <span class="material-symbols-outlined text-primary">analytics</span>
+                        </div>
+                        <div class="text-2xl sm:text-3xl font-extrabold text-on-surface font-mono tracking-tight truncate max-w-full my-sm" id="model-name" title="LinearRegression">LinearRegression</div>
+                        <p class="text-[10px] text-tertiary font-semibold">Lowest Mean Absolute Error fit</p>
+                    </div>
+                    <div class="dashboard-card p-lg rounded-2xl flex flex-col justify-between min-h-[140px]">
+                        <div class="flex justify-between items-center text-tertiary text-[11px] font-bold uppercase tracking-wider">
+                            <span>Model Confidence Score</span>
+                            <span class="material-symbols-outlined text-secondary">insights</span>
+                        </div>
+                        <div class="text-2xl sm:text-3xl font-extrabold text-secondary font-mono tracking-tight truncate max-w-full my-sm" id="confidence-score" title="92.4%">92.4%</div>
+                        <p class="text-[10px] text-tertiary font-semibold">R-Squared Coefficient</p>
+                    </div>
+                    <div class="dashboard-card p-lg rounded-2xl flex flex-col justify-between min-h-[140px]">
+                        <div class="flex justify-between items-center text-tertiary text-[11px] font-bold uppercase tracking-wider">
+                            <span>30-Day Expected Demand</span>
+                            <span class="material-symbols-outlined text-success">query_stats</span>
+                        </div>
+                        <div class="text-2xl sm:text-3xl font-extrabold text-on-surface font-mono tracking-tight truncate max-w-full my-sm" id="forecast-total" title="0 units">0 units</div>
+                        <p class="text-[10px] text-tertiary font-semibold">Sum of expectations</p>
+                    </div>
+                </div>
+
+                <!-- Line Chart -->
+                <div class="bg-[#101625] border border-white/5 p-lg rounded-2xl shadow-xl hover:border-[#3B82F6]/60 transition-all duration-200">
+                    <div class="flex flex-col sm:flex-row justify-between sm:items-center mb-6 gap-2">
+                        <div>
+                            <span class="text-[10px] text-[#22D3EE] font-bold uppercase tracking-widest block mb-xs">Inference Pipeline Visualizer</span>
+                            <h3 class="font-headline-md text-[#F8FAFC] font-bold">Historical Sales vs Forecast Projections</h3>
+                        </div>
+                        <div class="flex items-center gap-2 self-start sm:self-center">
+                            <span class="text-[10px] font-medium text-blue-400 bg-blue-500/10 border border-blue-500/20 px-2.5 py-1 rounded-full flex items-center gap-1">
+                                <span class="material-symbols-outlined text-[12px]">pan_tool</span> Scroll to Zoom / Drag to Pan
+                            </span>
+                            <button id="reset-zoom-btn" class="text-[10px] font-semibold text-slate-400 hover:text-white bg-white/5 border border-white/10 px-2.5 py-1 rounded-full flex items-center gap-1 transition-all cursor-pointer">
+                                <span class="material-symbols-outlined text-[12px]">refresh</span> Reset Zoom
+                            </button>
+                        </div>
+                    </div>
+                    <div class="h-80 w-full relative">
+                        <canvas id="forecast-chart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Dynamic Ledger list (Open Ledger Layout) -->
+                <div class="bg-transparent border-0 shadow-none overflow-hidden mt-md">
+                    <div class="py-md border-b border-[#334155] flex justify-between items-end mb-md">
+                        <div>
+                            <span class="text-[10px] text-tertiary font-bold uppercase tracking-widest block mb-xs">Operations schedule</span>
+                            <h3 class="font-headline-md text-headline-md text-on-surface font-bold">30-Day Daily Prediction Ledger</h3>
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto max-h-72 overflow-y-auto custom-scrollbar">
+                        <table class="w-full text-left border-collapse min-w-[500px]">
+                            <thead>
+                                <tr class="border-b border-[#334155] text-tertiary font-bold text-xs">
+                                    <th class="px-md py-sm tracking-wider">FORECAST DATE</th>
+                                    <th class="px-md py-sm tracking-wider text-right">PREDICTED DEMAND (QTY)</th>
+                                    <th class="px-md py-sm tracking-wider">REGRESSION MODEL</th>
+                                    <th class="px-md py-sm tracking-wider text-right">CONFIDENCE SCORE</th>
+                                </tr>
+                            </thead>
+                            <tbody id="forecast-table-body" class="divide-y divide-[#334155]/20 text-on-surface font-medium">
+                                <!-- Dynamic Rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</main>
+
+    <!-- Script triggers -->
+    <script src="/js/app.js"></script>
+    <script>
+        const productSelect = document.getElementById('product-select');
+        const emptyState = document.getElementById('empty-state');
+        const analyticsView = document.getElementById('analytics-view');
+
+        let activeChart = null;
+
+        // User details binding
+        const user = getCurrentUser();
+        if (user) {
+            document.getElementById('user-name-placeholder').innerText = user.full_name;
+            document.getElementById('user-role-placeholder').innerText = user.role === 'analyst' ? 'Pricing Analyst' : 'Senior Executive';
+            document.getElementById('user-avatar-placeholder').innerText = user.full_name.charAt(0).toUpperCase();
+        }
+
+        // 1. Populate product dropdown
+        async function loadProductSelect() {
+            try {
+                const list = await apiRequest('/pricing/products');
+                if (list.length === 0) {
+                    productSelect.innerHTML = '<option value="">No products available. Please upload data first.</option>';
+                    document.getElementById('empty-state').innerHTML = `
+                        <div class="w-16 h-16 rounded-full bg-primary/10 border border-primary/30 flex items-center justify-center mb-md text-primary mx-auto shadow-md">
+                            <span class="material-symbols-outlined text-[32px]">database</span>
+                        </div>
+                        <h3 class="font-headline-md text-headline-md text-on-surface font-bold">No Dataset Found</h3>
+                        <p class="font-body-md text-body-md text-tertiary max-w-md mt-sm font-medium leading-relaxed mx-auto">
+                            Please upload a dataset or try the demo dataset on the <a href="/pages/upload.html" class="text-primary hover:underline font-bold">Transaction Ingestion</a> page to perform demand forecasts.
+                        </p>
+                    `;
+                    return;
+                }
+                let options = '<option value="">-- Choose Product SKU --</option>';
+                list.forEach(p => {
+                    options += `<option value="${p.id}">${p.product_name}</option>`;
+                });
+                productSelect.innerHTML = options;
+                
+                // Synchronized filter state check
+                const savedProductId = StateStore.getSelectedProduct();
+                if (savedProductId && list.some(p => p.id === savedProductId)) {
+                    productSelect.value = savedProductId;
+                    loadProductForecast(savedProductId);
+                } else if (list.length > 0) {
+                    productSelect.value = list[0].id;
+                    StateStore.setSelectedProduct(list[0].id);
+                    loadProductForecast(list[0].id);
+                }
+            } catch (err) {
+                console.error(err);
+                productSelect.innerHTML = '<option value="">Failed to load products</option>';
+            }
+        }
+
+        // 2. Fetch and render forecast details
+        async function loadProductForecast(productId) {
+            if (!productId) {
+                emptyState.classList.remove('hidden');
+                analyticsView.classList.add('hidden');
+                return;
+            }
+
+            try {
+                const salesHistory = await apiRequest(`/pricing/sales/${productId}`);
+                const forecastData = await apiRequest(`/forecast/${productId}`);
+
+                emptyState.classList.add('hidden');
+                analyticsView.classList.remove('hidden');
+
+                const latestForecast = forecastData.forecast;
+                const modelName = latestForecast[0] ? latestForecast[0].model_name : 'N/A';
+                const confidence = latestForecast[0] && latestForecast[0].confidence_score 
+                    ? `${(latestForecast[0].confidence_score * 100).toFixed(1)}%` 
+                    : 'N/A';
+                const totalForecastQty = latestForecast.reduce((acc, curr) => acc + curr.predicted_demand, 0);
+
+                document.getElementById('model-name').innerText = modelName;
+                document.getElementById('confidence-score').innerText = confidence;
+                document.getElementById('forecast-total').innerText = `${Math.round(totalForecastQty).toLocaleString()} units`;
+
+                const chartCtx = document.getElementById('forecast-chart').getContext('2d');
+                if (activeChart) {
+                    activeChart.destroy();
+                }
+
+                // Rolling average smoothing helper
+                const calculateRollingAverage = (arr, windowSize) => {
+                    const result = [];
+                    for (let i = 0; i < arr.length; i++) {
+                        const start = Math.max(0, i - windowSize + 1);
+                        const slice = arr.slice(start, i + 1);
+                        const sum = slice.reduce((a, b) => a + b, 0);
+                        result.push(sum / slice.length);
+                    }
+                    return result;
+                };
+
+                // Aggregate salesHistory by sales_date (daily summation across all regions)
+                const dailyHistoryMap = {};
+                salesHistory.forEach(s => {
+                    const dateKey = s.sales_date;
+                    if (!dailyHistoryMap[dateKey]) {
+                        dailyHistoryMap[dateKey] = 0;
+                    }
+                    dailyHistoryMap[dateKey] += s.quantity_sold;
+                });
+
+                // Convert map to sorted list of { sales_date, quantity_sold }
+                const aggregatedHistory = Object.keys(dailyHistoryMap).sort().map(dateKey => ({
+                    sales_date: dateKey,
+                    quantity_sold: dailyHistoryMap[dateKey]
+                }));
+
+                const avgPrice = salesHistory.length > 0 ? (salesHistory.reduce((acc, s) => acc + safeNum(s.price), 0) / salesHistory.length) : 0;
+                const recentHistory = aggregatedHistory.slice(-30);
+                const histLabels = recentHistory.map(s => s.sales_date);
+                const rawVolume = recentHistory.map(s => s.quantity_sold);
+                
+                // Rolling average smoothing to avoid noisy zig-zag curves
+                const histVolume = calculateRollingAverage(rawVolume, 5);
+
+                const fcLabels = latestForecast.map(f => f.forecast_date);
+                const fcVolume = latestForecast.map(f => f.predicted_demand);
+
+                // Blend forecast values near transition for smooth continuance curves
+                const transitionPoint = histVolume[histVolume.length - 1] || 0;
+                const blendedForecast = [];
+                const blendDays = Math.min(fcVolume.length, 5);
+                for (let i = 0; i < fcVolume.length; i++) {
+                    if (i < blendDays) {
+                        const weight = (blendDays - i) / (blendDays + 1);
+                        blendedForecast.push(transitionPoint * weight + fcVolume[i] * (1 - weight));
+                    } else {
+                        blendedForecast.push(fcVolume[i]);
+                    }
+                }
+
+                const combinedLabels = [...histLabels, ...fcLabels];
+                const historicalDataset = [...histVolume, ...Array(fcVolume.length).fill(null)];
+                const forecastDataset = [...Array(histVolume.length - 1).fill(null), histVolume[histVolume.length - 1], ...blendedForecast];
+
+                activeChart = new Chart(chartCtx, {
+                    type: 'line',
+                    data: {
+                        labels: combinedLabels,
+                        datasets: [
+                            {
+                                label: 'Historical Sales (Smoothed)',
+                                data: historicalDataset,
+                                borderColor: '#3B82F6',
+                                backgroundColor: 'rgba(59, 130, 246, 0.08)',
+                                fill: false,
+                                tension: 0.4,
+                                borderWidth: 2.5,
+                                pointBackgroundColor: '#3B82F6',
+                                pointBorderColor: '#101625',
+                                pointBorderWidth: 1.5,
+                                pointRadius: 0,
+                                pointHoverRadius: 6
+                            },
+                            {
+                                label: 'Forecasted Demand',
+                                data: forecastDataset,
+                                borderColor: '#22D3EE',
+                                borderDash: [5, 5],
+                                backgroundColor: 'rgba(34, 211, 238, 0.05)',
+                                fill: false,
+                                tension: 0.4,
+                                borderWidth: 2.5,
+                                pointBackgroundColor: '#22D3EE',
+                                pointBorderColor: '#101625',
+                                pointBorderWidth: 1.5,
+                                pointRadius: 0,
+                                pointHoverRadius: 6
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        onHover: (event, chartElement) => {
+                            event.chart.canvas.style.cursor = chartElement.length ? 'pointer' : 'default';
+                        },
+                        interaction: {
+                            intersect: false,
+                            mode: 'index'
+                        },
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                                align: 'end',
+                                labels: {
+                                    color: '#94A3B8',
+                                    boxWidth: 10,
+                                    boxHeight: 10,
+                                    usePointStyle: true,
+                                    pointStyle: 'circle',
+                                    font: { family: 'Inter', size: 12, weight: 500 }
+                                }
+                            },
+                            tooltip: {
+                                backgroundColor: 'rgba(18, 26, 47, 0.95)',
+                                titleColor: '#F8FAFC',
+                                bodyColor: '#94A3B8',
+                                borderColor: 'rgba(255, 255, 255, 0.08)',
+                                borderWidth: 1,
+                                padding: 12,
+                                boxPadding: 6,
+                                usePointStyle: true,
+                                callbacks: {
+                                    label: function(context) {
+                                        let label = context.dataset.label || '';
+                                        if (label) {
+                                            label += ': ';
+                                        }
+                                        if (context.parsed.y !== null) {
+                                            const estValue = context.parsed.y * avgPrice;
+                                            label += `${Math.round(context.parsed.y).toLocaleString()} units (Value: ${formatCurrency(estValue)})`;
+                                        }
+                                        return label;
+                                    }
+                                }
+                            },
+                            zoom: {
+                                zoom: {
+                                    wheel: { enabled: true, speed: 0.05 },
+                                    pinch: { enabled: true },
+                                    mode: 'x',
+                                },
+                                pan: { enabled: true, mode: 'x', threshold: 10 }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                grid: { display: false },
+                                ticks: { color: '#94A3B8', font: { family: 'Inter', size: 10 } }
+                            },
+                            y: {
+                                grid: { color: 'rgba(255, 255, 255, 0.03)', borderDash: [5, 5] },
+                                ticks: { color: '#94A3B8', font: { family: 'Inter', size: 10 } }
+                            }
+                        }
+                    }
+                });
+
+                document.getElementById('reset-zoom-btn').addEventListener('click', () => {
+                    if (activeChart) activeChart.resetZoom();
+                });
+
+                const tbody = document.getElementById('forecast-table-body');
+                let rows = '';
+                latestForecast.forEach(f => {
+                    rows += `
+                        <tr class="hover:bg-[#243041]/40 border-b border-[#334155]/10 transition-colors">
+                            <td class="px-md py-md font-mono text-xs">${f.forecast_date}</td>
+                            <td class="px-md py-md text-right font-mono font-bold text-accent-cyan">${Math.round(f.predicted_demand).toLocaleString()}</td>
+                            <td class="px-md py-md text-tertiary font-medium">${f.model_name}</td>
+                            <td class="px-md py-md text-right font-mono text-tertiary font-semibold">${f.confidence_score ? (f.confidence_score * 100).toFixed(1) + '%' : 'N/A'}</td>
+                        </tr>
+                    `;
+                });
+                tbody.innerHTML = rows;
+
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        productSelect.addEventListener('change', (e) => {
+            StateStore.setSelectedProduct(e.target.value);
+            loadProductForecast(e.target.value);
+        });
+
+        loadProductSelect();
+    </script>
+</body>
+</html>

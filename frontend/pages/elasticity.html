@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Price Elasticity | PriceSense</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <link href="/css/styles.css" rel="stylesheet"/>
+    <!-- Chart.js via CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom"></script>
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-tertiary-container": "#F8FAFC",
+                    "surface-container-highest": "#1E293B",
+                    "error-container": "rgba(239, 68, 68, 0.15)",
+                    "surface-bright": "#1E293B",
+                    "outline-variant": "rgba(255, 255, 255, 0.05)",
+                    "on-background": "#F8FAFC",
+                    "secondary": "#22D3EE",
+                    "on-secondary-container": "#22D3EE",
+                    "tertiary-container": "rgba(148, 163, 184, 0.1)",
+                    "inverse-on-surface": "#060913",
+                    "inverse-primary": "#3B82F6",
+                    "on-primary-container": "#3B82F6",
+                    "background": "#060913",
+                    "error": "#EF4444",
+                    "on-primary": "#F8FAFC",
+                    "tertiary": "#94A3B8",
+                    "on-surface": "#F8FAFC",
+                    "on-tertiary": "#F8FAFC",
+                    "tertiary-fixed": "#94A3B8",
+                    "on-primary-fixed": "#F8FAFC",
+                    "on-error": "#F8FAFC",
+                    "on-secondary-fixed": "#F8FAFC",
+                    "secondary-container": "rgba(34, 211, 238, 0.15)",
+                    "surface-container": "#101625",
+                    "surface": "#060913",
+                    "on-primary-fixed-variant": "#3B82F6",
+                    "primary-container": "rgba(59, 130, 246, 0.15)",
+                    "secondary-fixed": "#22D3EE",
+                    "surface-tint": "#3B82F6",
+                    "surface-container-lowest": "#060913",
+                    "primary-fixed-dim": "#3B82F6",
+                    "surface-dim": "#060913",
+                    "outline": "rgba(255, 255, 255, 0.07)",
+                    "secondary-fixed-dim": "#22D3EE",
+                    "on-secondary-fixed-variant": "#22D3EE",
+                    "surface-container-high": "#141C2F",
+                    "inverse-surface": "#F8FAFC",
+                    "on-error-container": "#EF4444",
+                    "primary-fixed": "#3B82F6",
+                    "primary": "#3B82F6",
+                    "surface-container-low": "#0B0F19",
+                    "on-tertiary-fixed": "#F8FAFC",
+                    "surface-variant": "#101625",
+                    "on-tertiary-fixed-variant": "#94A3B8",
+                    "tertiary-fixed-dim": "#94A3B8",
+                    "on-secondary": "#F8FAFC",
+                    "on-surface-variant": "#94A3B8"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.375rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "2xl": "1rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "xl": "40px",
+                    "xs": "4px",
+                    "sm": "8px",
+                    "md": "16px",
+                    "margin": "24px",
+                    "lg": "24px",
+                    "base": "4px",
+                    "gutter": "16px"
+            },
+            "fontFamily": {
+                    "headline-lg": ["Inter"],
+                    "headline-md": ["Inter"],
+                    "body-md": ["Inter"],
+                    "label-md": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "label-sm": ["Inter"],
+                    "display-lg": ["Inter"]
+            },
+            "fontSize": {
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "500"}],
+                    "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                    "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "label-sm": ["11px", {"lineHeight": "14px", "fontWeight": "600"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+    <style>
+      body {
+        font-family: 'Inter', sans-serif;
+        background-color: #081225;
+      }
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      .custom-scrollbar::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #334155;
+        border-radius: 9999px;
+      }
+    </style>
+</head>
+<body class="flex min-h-screen text-on-surface bg-background">
+    <!-- SideNavBar -->
+    <aside id="sidebar-placeholder" class="hidden md:flex h-screen w-64 flex-col bg-surface-container-low border-r border-outline py-md px-sm gap-xs flex-shrink-0 sticky top-0 z-50"></aside>
+
+    <!-- Main Content Canvas -->
+    <main class="flex-1 flex flex-col min-h-screen overflow-x-hidden">
+        <!-- TopNavBar -->
+        <header class="w-full h-16 flex justify-between items-center px-lg bg-surface-container-low/90 backdrop-blur-md border-b border-outline sticky top-0 z-40 flex-shrink-0">
+            <div class="flex items-center gap-lg">
+                <button id="mobile-menu-toggle" class="md:hidden p-sm text-tertiary hover:text-on-surface hover:bg-surface-container rounded-lg transition-all duration-200 mr-xs flex items-center justify-center bg-transparent border-none outline-none cursor-pointer">
+                    <span class="material-symbols-outlined">menu</span>
+                </button>
+                <h1 class="font-headline-md text-headline-md font-bold text-on-surface">Price Elasticity</h1>
+            </div>
+            <div class="flex items-center gap-md">
+                <div class="relative hidden sm:block">
+                    <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-tertiary text-[20px]">search</span>
+                    <input class="bg-background border border-outline rounded-xl px-10 py-1.5 text-body-md focus:ring-2 focus:ring-[#3B82F6]/25 focus:border-primary outline-none transition-all w-64 text-on-surface" placeholder="Search data points..." type="text"/>
+                </div>
+                <button class="p-2 text-tertiary hover:text-on-surface hover:bg-surface-container rounded-full transition-all duration-200">
+                    <span class="material-symbols-outlined">notifications</span>
+                </button>
+                <button class="p-2 text-tertiary hover:text-on-surface hover:bg-surface-container rounded-full transition-all duration-200">
+                    <span class="material-symbols-outlined">settings</span>
+                </button>
+                <div class="h-8 w-px bg-[#334155] mx-xs"></div>
+                <div class="flex items-center gap-sm" id="user-profile-header">
+                    <div class="w-8 h-8 rounded-full bg-primary text-on-surface flex items-center justify-center font-bold text-xs" id="user-avatar-placeholder">A</div>
+                    <div class="hidden lg:block text-left">
+                        <p class="font-label-md text-label-md text-on-surface leading-none" id="user-name-placeholder">A. Sterling</p>
+                        <p class="font-label-sm text-label-sm text-tertiary opacity-70 mt-1" id="user-role-placeholder">Senior Strategist</p>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="flex-1 p-lg space-y-lg max-w-7xl w-full mx-auto">
+            
+            <!-- Product Selector Card -->
+            <div class="dashboard-card p-md rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-md">
+                <div>
+                    <h2 class="font-headline-md text-headline-md text-on-surface font-bold">Elasticity & Price Sensitivity</h2>
+                    <p class="font-body-md text-body-md text-tertiary mt-xs font-medium">Analyze how pricing adjustments affect units sold using historical regression curves.</p>
+                </div>
+                <div class="flex items-center gap-sm">
+                    <label class="font-label-md text-label-md text-tertiary font-bold uppercase tracking-wider whitespace-nowrap">Select Product SKU:</label>
+                    <select id="product-select" class="bg-background border border-outline rounded-xl px-md py-sm font-body-md text-body-md text-on-surface focus:ring-2 focus:ring-[#3B82F6]/25 focus:border-primary outline-none transition-all w-64">
+                        <option value="">Loading active products...</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Empty State -->
+            <section id="empty-state" class="card-elevated rounded-2xl p-xl text-center flex flex-col items-center justify-center min-h-[300px]">
+                <div class="w-16 h-16 rounded-full bg-surface-container-low border border-outline flex items-center justify-center mb-md shadow-md">
+                    <span class="material-symbols-outlined text-secondary text-[32px]">insights</span>
+                </div>
+                <h3 class="font-headline-md text-headline-md text-on-surface font-bold">No Product Selected</h3>
+                <p class="font-body-md text-body-md text-tertiary max-w-md mt-sm font-medium">Choose an active product from the drop-down menu above to execute the elasticity analysis model and fit the constant PED demand curve.</p>
+            </section>
+
+            <!-- Analytics view (hidden by default) -->
+            <div id="analytics-view" class="hidden space-y-lg">
+                <!-- Elasticity stats -->
+                <!-- Analytical Elasticity Parameter Ledger -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-lg">
+                    <div class="dashboard-card p-lg rounded-2xl flex flex-col justify-between min-h-[160px]">
+                        <div>
+                            <span class="text-[10px] font-bold uppercase tracking-widest text-[#22D3EE] block mb-xs">Model regression output</span>
+                            <span class="text-xs text-tertiary block mb-sm">Calculated Elasticity Coefficient (PED)</span>
+                            <div class="text-4xl font-extrabold text-on-surface font-mono tracking-tight" id="elasticity-score">-1.84</div>
+                        </div>
+                        <div class="mt-md">
+                            <span id="classification-badge" class="px-2.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-secondary-container text-secondary border border-secondary/20">Elastic</span>
+                        </div>
+                    </div>
+                    <div class="lg:col-span-2 card-elevated p-lg rounded-2xl">
+                        <span class="text-[10px] font-bold uppercase tracking-widest text-tertiary block mb-xs">Economic analysis translation</span>
+                        <h3 class="font-headline-md text-headline-md text-on-surface font-bold mb-xs">Consumer Sensitivity Breakdown</h3>
+                        <p class="text-xs text-tertiary leading-relaxed font-medium mt-2" id="elasticity-explanation">
+                            Loading economic translation details...
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Scatter plot container (Elevated Visual Panel) -->
+                <div class="bg-[#101625] border border-white/5 p-lg rounded-2xl shadow-xl hover:border-[#3B82F6]/60 transition-all duration-200">
+                    <div class="flex flex-col sm:flex-row justify-between sm:items-center mb-6 gap-2">
+                        <div>
+                            <span class="text-[10px] text-[#22D3EE] font-bold uppercase tracking-widest block mb-xs">Regression Fit Curve</span>
+                            <h3 class="font-headline-md text-[#F8FAFC] font-bold">Empirical Sales Scatterplot & Fitted Demand Curve</h3>
+                        </div>
+                        <div class="flex items-center gap-2 self-start sm:self-center">
+                            <span class="text-[10px] font-medium text-blue-400 bg-blue-500/10 border border-blue-500/20 px-2.5 py-1 rounded-full flex items-center gap-1">
+                                <span class="material-symbols-outlined text-[12px]">pan_tool</span> Zoomable Chart (Wheel/Pinch)
+                            </span>
+                            <button id="reset-zoom-btn" class="text-[10px] font-semibold text-slate-400 hover:text-white bg-white/5 border border-white/10 px-2.5 py-1 rounded-full flex items-center gap-1 transition-all cursor-pointer">
+                                <span class="material-symbols-outlined text-[12px]">refresh</span> Reset Zoom
+                            </button>
+                        </div>
+                    </div>
+                    <div class="h-96 w-full relative">
+                        <canvas id="demand-curve-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</main>
+
+    <!-- Script triggers -->
+    <script src="/js/app.js"></script>
+    <script>
+        const productSelect = document.getElementById('product-select');
+        const emptyState = document.getElementById('empty-state');
+        const analyticsView = document.getElementById('analytics-view');
+
+        let activeChart = null;
+
+        // User profile setup
+        const user = getCurrentUser();
+        if (user) {
+            document.getElementById('user-name-placeholder').innerText = user.full_name;
+            document.getElementById('user-role-placeholder').innerText = user.role === 'analyst' ? 'Pricing Analyst' : 'Senior Executive';
+            document.getElementById('user-avatar-placeholder').innerText = user.full_name.charAt(0).toUpperCase();
+        }
+
+        // 1. Populate product dropdown
+        async function loadProductSelect() {
+            try {
+                const list = await apiRequest('/pricing/products');
+                if (list.length === 0) {
+                    productSelect.innerHTML = '<option value="">No products available. Please upload data first.</option>';
+                    document.getElementById('empty-state').innerHTML = `
+                        <div class="w-16 h-16 rounded-full bg-primary/10 border border-primary/30 flex items-center justify-center mb-md text-primary mx-auto shadow-md">
+                            <span class="material-symbols-outlined text-[32px]">database</span>
+                        </div>
+                        <h3 class="font-headline-md text-headline-md text-on-surface font-bold">No Dataset Found</h3>
+                        <p class="font-body-md text-body-md text-tertiary max-w-md mt-sm font-medium leading-relaxed mx-auto">
+                            Please upload a dataset or try the demo dataset on the <a href="/pages/upload.html" class="text-primary hover:underline font-bold">Transaction Ingestion</a> page to analyze product elasticities.
+                        </p>
+                    `;
+                    return;
+                }
+                let options = '<option value="">-- Choose Product SKU --</option>';
+                list.forEach(p => {
+                    options += `<option value="${p.id}">${p.product_name}</option>`;
+                });
+                productSelect.innerHTML = options;
+
+                // Centralized state check
+                const savedProductId = StateStore.getSelectedProduct();
+                if (savedProductId && list.some(p => p.id === savedProductId)) {
+                    productSelect.value = savedProductId;
+                    loadProductElasticity(savedProductId);
+                } else if (list.length > 0) {
+                    productSelect.value = list[0].id;
+                    StateStore.setSelectedProduct(list[0].id);
+                    loadProductElasticity(list[0].id);
+                }
+            } catch (err) {
+                console.error(err);
+                productSelect.innerHTML = '<option value="">Failed to load products</option>';
+            }
+        }
+
+        // 2. Fetch and render elasticity data
+        async function loadProductElasticity(productId) {
+            if (!productId) {
+                emptyState.classList.remove('hidden');
+                analyticsView.classList.add('hidden');
+                return;
+            }
+
+            try {
+                const elasticityRec = await apiRequest(`/pricing/elasticity/${productId}`);
+                const salesHistory = await apiRequest(`/pricing/sales/${productId}`);
+
+                emptyState.classList.add('hidden');
+                analyticsView.classList.remove('hidden');
+
+                const ped = safeNum(elasticityRec.elasticity_score, -0.5);
+                const type = (elasticityRec.elasticity_type || 'inelastic').toLowerCase();
+
+                document.getElementById('elasticity-score').innerText = ped.toFixed(2);
+                
+                const badge = document.getElementById('classification-badge');
+                badge.innerText = elasticityRec.elasticity_type || 'Inelastic';
+                
+                let explanation = '';
+                if (type === 'elastic') {
+                    badge.className = 'px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-secondary-container text-secondary border border-secondary/20';
+                    explanation = `Demand is highly responsive to price adjustments (PED coefficient: <strong class="text-secondary font-mono font-bold">${ped.toFixed(2)}</strong>). A coefficient value of magnitude greater than 1.0 indicates that consumers are highly price-sensitive. <strong class="text-on-surface">Strategy recommendation: Lower prices.</strong> Lowering prices will stimulate sales volume increases significant enough to offset the lower unit margins, thereby growing total revenue.`;
+                } else if (type === 'inelastic') {
+                    badge.className = 'px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-error/15 text-error border border-error/20';
+                    explanation = `Demand is relatively unresponsive to price changes (PED coefficient: <strong class="text-error font-mono font-bold">${ped.toFixed(2)}</strong>). A coefficient value between -1.0 and 0.0 indicates that consumers display low price sensitivity. <strong class="text-on-surface">Strategy recommendation: Raise prices.</strong> Since sales volumes will not drop significantly, increasing prices will expand total margins and yield higher profitability.`;
+                } else {
+                    badge.className = 'px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-tertiary-container text-tertiary border border-tertiary/20';
+                    explanation = `Demand changes in direct proportion to price shifts (PED coefficient: <strong class="text-on-surface font-mono font-bold">${ped.toFixed(2)}</strong>). Unitary elasticity means total revenue is mathematically maximized at the current price level. Suggest maintaining current prices, or exploring other non-price variables.`;
+                }
+                
+                document.getElementById('elasticity-explanation').innerHTML = explanation;
+
+                // Render scatter & curve
+                const chartCtx = document.getElementById('demand-curve-chart').getContext('2d');
+                if (activeChart) {
+                    activeChart.destroy();
+                }
+
+                // Group salesHistory by price to get average quantity at each price point
+                const priceGroups = {};
+                salesHistory.forEach(s => {
+                    const priceKey = safeNum(s.price).toFixed(2);
+                    if (!priceGroups[priceKey]) {
+                        priceGroups[priceKey] = { sumQty: 0, count: 0 };
+                    }
+                    priceGroups[priceKey].sumQty += safeNum(s.quantity_sold);
+                    priceGroups[priceKey].count += 1;
+                });
+                
+                const scatterPoints = Object.keys(priceGroups).map(p => ({
+                    x: parseFloat(p),
+                    y: priceGroups[p].sumQty / priceGroups[p].count
+                }));
+
+                const historyLen = salesHistory.length > 0 ? salesHistory.length : 1;
+                const avgPrice = safeNum(salesHistory.reduce((acc, curr) => acc + safeNum(curr.price), 0) / historyLen, 1.0);
+                const avgQty = safeNum(salesHistory.reduce((acc, curr) => acc + safeNum(curr.quantity_sold), 0) / historyLen, 1.0);
+                
+                const safeAvgPrice = avgPrice > 0 ? avgPrice : 1.0;
+                const A = safeNum(avgQty / Math.pow(safeAvgPrice, ped), 1.0);
+
+                const prices = salesHistory.map(s => safeNum(s.price));
+                const minP = prices.length > 0 ? Math.min(...prices) * 0.85 : 1.0;
+                const maxP = prices.length > 0 ? Math.max(...prices) * 1.15 : 100.0;
+                const step = maxP > minP ? (maxP - minP) / 30 : 1.0;
+
+                const curveLineData = [];
+                for (let p = minP; p <= maxP; p += step) {
+                    const safeP = p > 0 ? p : 1.0;
+                    const q = safeNum(A * Math.pow(safeP, ped));
+                    if (q >= 0 && isFinite(q)) {
+                        curveLineData.push({ x: p, y: q });
+                    }
+                }
+
+                activeChart = new Chart(chartCtx, {
+                    type: 'scatter',
+                    data: {
+                        datasets: [
+                            {
+                                label: 'Average Price-Point Volume',
+                                data: scatterPoints,
+                                backgroundColor: 'rgba(59, 130, 246, 0.4)',
+                                borderColor: '#3B82F6',
+                                borderWidth: 1.5,
+                                pointRadius: 5,
+                                order: 2
+                            },
+                            {
+                                label: 'Fitted Demand Curve',
+                                data: curveLineData,
+                                type: 'line',
+                                borderColor: '#22D3EE',
+                                borderWidth: 2,
+                                fill: false,
+                                showLine: true,
+                                pointRadius: 0,
+                                tension: 0.2,
+                                order: 1
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        onHover: (event, chartElement) => {
+                            event.chart.canvas.style.cursor = chartElement.length ? 'pointer' : 'default';
+                        },
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                                align: 'end',
+                                labels: {
+                                    color: '#94A3B8',
+                                    boxWidth: 10,
+                                    boxHeight: 10,
+                                    usePointStyle: true,
+                                    pointStyle: 'circle',
+                                    font: { family: 'Inter', size: 12, weight: 500 }
+                                }
+                            },
+                            tooltip: {
+                                backgroundColor: 'rgba(18, 26, 47, 0.95)',
+                                titleColor: '#F8FAFC',
+                                bodyColor: '#94A3B8',
+                                borderColor: 'rgba(255, 255, 255, 0.08)',
+                                borderWidth: 1,
+                                padding: 12,
+                                boxPadding: 6,
+                                usePointStyle: true,
+                                callbacks: {
+                                    label: function(context) {
+                                        let label = context.dataset.label || '';
+                                        if (label) {
+                                            label += ': ';
+                                        }
+                                        if (context.parsed.x !== null && context.parsed.y !== null) {
+                                            const revenue = context.parsed.x * context.parsed.y;
+                                            label += `Price: ${formatCurrency(context.parsed.x)} | Vol: ${context.parsed.y.toFixed(1)} units | Est. Revenue: ${formatCurrency(revenue)}`;
+                                        }
+                                        return label;
+                                    }
+                                }
+                            },
+                            zoom: {
+                                zoom: {
+                                    wheel: { enabled: true, speed: 0.05 },
+                                    pinch: { enabled: true },
+                                    mode: 'xy',
+                                },
+                                pan: { enabled: true, mode: 'xy', threshold: 10 }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                type: 'linear',
+                                position: 'bottom',
+                                title: {
+                                    display: true,
+                                    text: 'Unit Selling Price (₹)',
+                                    color: '#94A3B8',
+                                    font: { size: 11, weight: 600, family: 'Inter' }
+                                },
+                                grid: { display: false },
+                                ticks: { color: '#94A3B8', font: { family: 'Inter', size: 10 } }
+                            },
+                            y: {
+                                title: {
+                                    display: true,
+                                    text: 'Daily Quantity Sold',
+                                    color: '#94A3B8',
+                                    font: { size: 11, weight: 600, family: 'Inter' }
+                                },
+                                grid: { color: 'rgba(255, 255, 255, 0.03)', borderDash: [5, 5] },
+                                ticks: { color: '#94A3B8', font: { family: 'Inter', size: 10 } }
+                            }
+                        }
+                    }
+                });
+
+                document.getElementById('reset-zoom-btn').addEventListener('click', () => {
+                    if (activeChart) activeChart.resetZoom();
+                });
+
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        productSelect.addEventListener('change', (e) => {
+            StateStore.setSelectedProduct(e.target.value);
+            loadProductElasticity(e.target.value);
+        });
+
+        loadProductSelect();
+    </script>
+</body>
+</html>

@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Upload Dataset | PriceSense</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <link href="/css/styles.css" rel="stylesheet"/>
+    <script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                    "on-tertiary-container": "#F8FAFC",
+                    "surface-container-highest": "#1E293B",
+                    "error-container": "rgba(239, 68, 68, 0.15)",
+                    "surface-bright": "#1E293B",
+                    "outline-variant": "rgba(255, 255, 255, 0.05)",
+                    "on-background": "#F8FAFC",
+                    "secondary": "#22D3EE",
+                    "on-secondary-container": "#22D3EE",
+                    "tertiary-container": "rgba(148, 163, 184, 0.1)",
+                    "inverse-on-surface": "#060913",
+                    "inverse-primary": "#3B82F6",
+                    "on-primary-container": "#3B82F6",
+                    "background": "#060913",
+                    "error": "#EF4444",
+                    "success": "#10B981",
+                    "on-primary": "#F8FAFC",
+                    "tertiary": "#94A3B8",
+                    "on-surface": "#F8FAFC",
+                    "on-tertiary": "#F8FAFC",
+                    "tertiary-fixed": "#94A3B8",
+                    "on-primary-fixed": "#F8FAFC",
+                    "on-error": "#F8FAFC",
+                    "on-secondary-fixed": "#F8FAFC",
+                    "secondary-container": "rgba(34, 211, 238, 0.15)",
+                    "surface-container": "#101625",
+                    "surface": "#060913",
+                    "on-primary-fixed-variant": "#3B82F6",
+                    "primary-container": "rgba(59, 130, 246, 0.15)",
+                    "secondary-fixed": "#22D3EE",
+                    "surface-tint": "#3B82F6",
+                    "surface-container-lowest": "#060913",
+                    "primary-fixed-dim": "#3B82F6",
+                    "surface-dim": "#060913",
+                    "outline": "rgba(255, 255, 255, 0.07)",
+                    "secondary-fixed-dim": "#22D3EE",
+                    "on-secondary-fixed-variant": "#22D3EE",
+                    "surface-container-high": "#141C2F",
+                    "inverse-surface": "#F8FAFC",
+                    "on-error-container": "#EF4444",
+                    "primary-fixed": "#3B82F6",
+                    "primary": "#3B82F6",
+                    "surface-container-low": "#0B0F19",
+                    "on-tertiary-fixed": "#F8FAFC",
+                    "surface-variant": "#101625",
+                    "on-tertiary-fixed-variant": "#94A3B8",
+                    "tertiary-fixed-dim": "#94A3B8",
+                    "on-secondary": "#F8FAFC",
+                    "on-surface-variant": "#94A3B8"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.375rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "2xl": "1rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "xl": "40px",
+                      "xs": "4px",
+                      "sm": "8px",
+                      "md": "16px",
+                      "margin": "24px",
+                      "lg": "24px",
+                      "base": "4px",
+                      "gutter": "16px"
+              },
+              "fontFamily": {
+                      "headline-lg": ["Inter"],
+                      "headline-md": ["Inter"],
+                      "body-md": ["Inter"],
+                      "label-md": ["Inter"],
+                      "body-lg": ["Inter"],
+                      "label-sm": ["Inter"],
+                      "display-lg": ["Inter"]
+              },
+              "fontSize": {
+                      "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                      "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "500"}],
+                      "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                      "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                      "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "label-sm": ["11px", {"lineHeight": "14px", "fontWeight": "600"}],
+                      "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "600"}]
+              }
+            },
+          },
+        }
+      </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #081225;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .custom-dashed-border {
+            background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='12' ry='12' stroke='%23334155' stroke-width='2' stroke-dasharray='10%2c 10' stroke-dashoffset='0' stroke-linecap='square'/%3e%3c/svg%3e");
+        }
+        .custom-dashed-border-active {
+            background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='12' ry='12' stroke='%233B82F6' stroke-width='3' stroke-dasharray='10%2c 10' stroke-dashoffset='0' stroke-linecap='square'/%3e%3c/svg%3e");
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 9999px;
+        }
+        .dashboard-card {
+            background-color: #162033;
+            border: 1px solid #334155;
+        }
+    </style>
+</head>
+<body class="flex min-h-screen text-on-surface bg-background">
+    <!-- SideNavBar -->
+    <aside id="sidebar-placeholder" class="hidden md:flex h-screen w-64 flex-col bg-surface-container-low border-r border-outline py-md px-sm gap-xs flex-shrink-0 sticky top-0 z-50"></aside>
+
+    <!-- Main Content Canvas -->
+    <main class="flex-1 flex flex-col min-h-screen overflow-x-hidden">
+        <!-- TopNavBar -->
+        <header class="flex justify-between items-center px-lg w-full bg-surface-container-low/90 backdrop-blur-md h-16 border-b border-outline sticky top-0 z-40 flex-shrink-0">
+            <div class="flex items-center gap-lg">
+                <button id="mobile-menu-toggle" class="md:hidden p-sm text-tertiary hover:text-on-surface hover:bg-surface-container rounded-lg transition-all duration-200 mr-xs flex items-center justify-center bg-transparent border-none outline-none cursor-pointer">
+                    <span class="material-symbols-outlined">menu</span>
+                </button>
+                <h1 class="font-headline-md text-headline-md font-bold text-on-surface">Data Ingestion Engine</h1>
+            </div>
+            <div class="flex items-center gap-md">
+                <button class="p-2 text-tertiary hover:text-on-surface hover:bg-surface-container rounded-full transition-all duration-200">
+                    <span class="material-symbols-outlined">notifications</span>
+                </button>
+                <button class="p-2 text-tertiary hover:text-on-surface hover:bg-surface-container rounded-full transition-all duration-200">
+                    <span class="material-symbols-outlined">settings</span>
+                </button>
+                <div class="h-8 w-px bg-[#334155] mx-xs"></div>
+                <div class="flex items-center gap-sm" id="user-profile-header">
+                    <div class="w-8 h-8 rounded-full bg-primary text-on-surface flex items-center justify-center font-bold text-xs" id="user-avatar-placeholder">A</div>
+                    <div class="hidden lg:block text-left">
+                        <p class="font-label-md text-label-md text-on-surface leading-none" id="user-name-placeholder">A. Sterling</p>
+                        <p class="font-label-sm text-label-sm text-tertiary opacity-70 mt-1" id="user-role-placeholder">Senior Strategist</p>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="flex-1 p-lg space-y-lg max-w-7xl w-full mx-auto">
+            
+            <!-- ALERT NOTIFICATION CONTAINER -->
+            <div id="error-alert-box" class="hidden bg-error/15 border border-error/30 text-error p-md rounded-2xl flex items-start gap-md">
+                <span class="material-symbols-outlined text-[24px]">error</span>
+                <div>
+                    <h4 class="font-bold text-sm leading-none" id="error-title">Data Schema Error</h4>
+                    <p class="text-xs text-tertiary mt-1" id="error-message">Column mappings could not be fully resolved. Please map standard fields manually.</p>
+                </div>
+            </div>
+
+            <!-- MAIN PIPELINE WIDGET -->
+            <section class="grid grid-cols-1 lg:grid-cols-3 gap-lg">
+                <!-- Dropzone / Config State Column -->
+                <div class="lg:col-span-2 space-y-lg">
+                    <!-- Standard File Upload Drag Area -->
+                    <div id="upload-stage" class="dashboard-card rounded-2xl p-xl relative min-h-[350px] flex items-center justify-center">
+                        <div id="drop-border" class="custom-dashed-border absolute inset-0 m-4 rounded-xl pointer-events-none opacity-40"></div>
+                        <div class="relative flex flex-col items-center justify-center py-12 text-center group cursor-pointer w-full h-full" id="drop-zone">
+                            <div class="w-16 h-16 rounded-full bg-surface-container-low border border-outline flex items-center justify-center mb-md group-hover:bg-primary/10 group-hover:border-primary/40 transition-all duration-300">
+                                <span class="material-symbols-outlined text-primary text-[32px]">upload_file</span>
+                            </div>
+                            <h2 class="font-headline-md text-headline-md text-on-surface font-bold mb-xs" id="upload-headline">Drag and drop dataset</h2>
+                            <p class="font-body-md text-body-md text-tertiary mb-lg" id="upload-sub">Support for .CSV, .XLSX, and .XLS files up to 50MB</p>
+                            <div class="flex flex-wrap justify-center gap-md">
+                                <button type="button" id="browse-btn" class="bg-primary text-on-surface font-semibold px-lg py-sm rounded-xl hover:scale-[1.02] active:scale-95 hover:shadow-lg hover:shadow-primary/10 transition-all duration-150 flex items-center gap-sm">
+                                    <span class="material-symbols-outlined text-[18px]">add</span>
+                                    <span>Browse Files</span>
+                                </button>
+                                <button type="button" id="demo-btn" class="border border-secondary text-secondary hover:bg-secondary/15 font-semibold px-lg py-sm rounded-xl hover:scale-[1.02] active:scale-95 transition-all duration-150 flex items-center gap-sm">
+                                    <span class="material-symbols-outlined text-[18px]">play_circle</span>
+                                    <span>Try Demo Dataset</span>
+                                </button>
+                            </div>
+                            <input type="file" id="file-input" class="hidden" accept=".csv, .xlsx, .xls"/>
+                        </div>
+                    </div>
+
+                    <!-- Column Mapping Configuration UI (Hidden by default, active after analyze) -->
+                    <div id="mapping-stage" class="hidden dashboard-card rounded-2xl p-lg space-y-md">
+                        <div>
+                            <span class="text-[10px] text-secondary font-bold uppercase tracking-widest block mb-xs">Schema Verification Step</span>
+                            <h2 class="font-headline-md text-headline-md text-on-surface font-bold">Map Uploaded Columns to System Fields</h2>
+                            <p class="text-xs text-tertiary mt-1">Our engine matched several fields. Review and adjust any dropdown assignments below to confirm system definitions.</p>
+                        </div>
+                        <div class="h-px bg-outline/40 my-md"></div>
+                        
+                        <!-- Grid Layout for Fields mapping -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-md" id="mapping-fields-container">
+                            <!-- Populated dynamically via JS -->
+                        </div>
+
+                        <div class="flex justify-end gap-md pt-md border-t border-outline/30">
+                            <button type="button" id="cancel-mapping-btn" class="border border-outline text-tertiary hover:text-on-surface hover:bg-surface-container font-semibold px-lg py-sm rounded-xl transition-all duration-150">
+                                Reset Upload
+                            </button>
+                            <button type="button" id="confirm-ingestion-btn" class="bg-primary text-on-surface font-bold px-lg py-sm rounded-xl hover:opacity-90 hover:scale-[1.01] active:scale-95 transition-all duration-150 flex items-center gap-sm">
+                                <span class="material-symbols-outlined text-[18px]">check_circle</span>
+                                <span>Confirm & Ingest</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Ingestion Stats Summary Dashboard (Success Panel) -->
+                    <div id="summary-stage" class="hidden dashboard-card rounded-2xl p-lg space-y-lg">
+                        <div class="flex items-center gap-md">
+                            <div class="w-12 h-12 rounded-full bg-success/15 border border-success/30 flex items-center justify-center text-success">
+                                <span class="material-symbols-outlined text-[28px]">verified</span>
+                            </div>
+                            <div>
+                                <span class="text-[10px] text-success font-bold uppercase tracking-widest block mb-xs">Ingestion statement</span>
+                                <h2 class="font-headline-md text-headline-md text-on-surface font-bold">Ledger Upload Completed Successfully!</h2>
+                            </div>
+                        </div>
+                        <div class="h-px bg-outline/40"></div>
+
+                        <!-- Statistics Grid -->
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-md">
+                            <div class="bg-background border border-outline/40 rounded-xl p-md">
+                                <span class="text-[10px] text-tertiary font-bold block uppercase">Rows Ingested</span>
+                                <span class="text-xl font-bold text-on-surface font-mono" id="sum-rows-processed">0</span>
+                            </div>
+                            <div class="bg-background border border-outline/40 rounded-xl p-md">
+                                <span class="text-[10px] text-tertiary font-bold block uppercase">Duplicates Cut</span>
+                                <span class="text-xl font-bold text-on-surface font-mono text-secondary" id="sum-dup-removed">0</span>
+                            </div>
+                            <div class="bg-background border border-outline/40 rounded-xl p-md">
+                                <span class="text-[10px] text-tertiary font-bold block uppercase">Missing Fixed</span>
+                                <span class="text-xl font-bold text-on-surface font-mono text-success" id="sum-missing-fixed">0</span>
+                            </div>
+                            <div class="bg-background border border-outline/40 rounded-xl p-md">
+                                <span class="text-[10px] text-tertiary font-bold block uppercase">Unique SKUs</span>
+                                <span class="text-xl font-bold text-on-surface font-mono" id="sum-detected-products">0</span>
+                            </div>
+                        </div>
+
+                        <!-- Metadata details -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-lg border-t border-outline/30 pt-md">
+                            <div class="space-y-sm text-xs font-semibold">
+                                <div class="flex justify-between">
+                                    <span class="text-tertiary">Product Categories:</span>
+                                    <span class="text-on-surface font-mono" id="sum-detected-categories">General</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-tertiary">Transaction Timeline:</span>
+                                    <span class="text-on-surface font-mono" id="sum-date-range">N/A</span>
+                                </div>
+                            </div>
+                            <div class="space-y-sm text-xs font-semibold">
+                                <div class="flex justify-between">
+                                    <span class="text-tertiary">Total Calculated Sales:</span>
+                                    <span class="text-secondary font-mono" id="sum-total-revenue">₹0.00</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-tertiary">Ingestion Status:</span>
+                                    <span class="text-success uppercase font-bold flex items-center gap-xs">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-success"></span> Processed
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex gap-md justify-end pt-md border-t border-outline/30">
+                            <button type="button" id="summary-reset-btn" class="border border-outline text-tertiary hover:text-on-surface hover:bg-surface-container font-semibold px-lg py-sm rounded-xl transition-all duration-150">
+                                Import Another File
+                            </button>
+                            <a href="/pages/dashboard.html" class="bg-primary text-on-surface font-bold px-lg py-sm rounded-xl hover:opacity-90 hover:scale-[1.01] transition-all duration-150 flex items-center gap-sm">
+                                <span>Go to Overview Dashboard</span>
+                                <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Info checklist / status sidebar -->
+                <div class="dashboard-card rounded-2xl p-lg flex flex-col justify-between">
+                    <div>
+                        <h3 class="font-label-md text-label-md text-tertiary font-bold uppercase tracking-wider mb-md">Ingest Controller</h3>
+                        
+                        <!-- No file selected placeholder -->
+                        <div id="no-file-card" class="text-center py-8 text-tertiary/40 font-body-md">
+                            <span class="material-symbols-outlined text-[48px] opacity-40">insert_drive_file</span>
+                            <p class="mt-2 text-xs font-semibold">Ready to upload database</p>
+                        </div>
+
+                        <!-- Selected File details -->
+                        <div id="selection-card" class="hidden">
+                            <div class="flex items-center gap-md p-md bg-surface-container-low rounded-xl border border-outline mb-md shadow-inner">
+                                <span class="material-symbols-outlined text-secondary">description</span>
+                                <div class="flex-1 overflow-hidden">
+                                    <div class="font-label-md text-label-md text-on-surface font-semibold truncate" id="selection-filename">uploading...</div>
+                                    <div class="text-[10px] text-tertiary" id="selection-filesize">0 KB</div>
+                                </div>
+                                <button type="button" id="clear-selection-btn" class="text-tertiary hover:text-error transition-colors bg-transparent border-none outline-none cursor-pointer">
+                                    <span class="material-symbols-outlined text-[18px]">close</span>
+                                </button>
+                            </div>
+                            <div class="space-y-sm" id="validation-checks">
+                                <div class="flex items-center gap-sm">
+                                    <span class="material-symbols-outlined text-secondary text-[16px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                                    <span class="text-label-md font-label-md text-on-surface font-medium" id="analyzing-check-label">File analysis complete</span>
+                                </div>
+                                <div class="flex items-center gap-sm" id="mappings-check-row">
+                                    <span class="material-symbols-outlined text-tertiary text-[16px]" id="mappings-check-icon" style="font-variation-settings: 'FILL' 1;">pending</span>
+                                    <span class="text-label-md font-label-md text-tertiary font-medium" id="mappings-check-label">Awaiting mapping confirmation</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Processing Status Indicator -->
+                        <div id="pipeline-status-card" class="hidden mt-md p-md bg-surface-container-high rounded-xl border border-primary/20 space-y-xs shadow-md">
+                            <div class="flex items-center gap-sm text-primary">
+                                <span class="animate-spin material-symbols-outlined text-[18px]">sync</span>
+                                <span class="font-label-md text-label-md font-bold" id="pipeline-status-title">Uploading...</span>
+                            </div>
+                            <p class="text-[11px] text-tertiary font-medium" id="pipeline-status-desc">Analyzing headers and structural validity.</p>
+                        </div>
+                    </div>
+
+                    <div class="mt-lg pt-lg border-t border-outline/60 space-y-md">
+                        <!-- Instructions helper block -->
+                        <div class="text-[10px] text-tertiary space-y-2 leading-relaxed">
+                            <p class="font-bold text-[#64748B] uppercase tracking-wider">Helpful Tips:</p>
+                            <p>Verify that column mapping assignments matches pricing values. If revenue or profit calculations are omitted, fallbacks will estimate them automatically.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Dataset Preview Table (Open Ledger Layout) -->
+            <section class="bg-transparent border-0 shadow-none overflow-hidden mt-md">
+                <div class="py-md border-b border-[#334155] flex justify-between items-end">
+                    <div class="flex items-center gap-sm">
+                        <span class="material-symbols-outlined text-tertiary">preview</span>
+                        <h2 class="font-headline-md text-headline-md text-on-surface font-bold">Uploaded File Preview</h2>
+                    </div>
+                    <div class="flex items-center gap-md">
+                        <span class="text-label-md font-label-md text-tertiary" id="preview-row-count">Sample data display format</span>
+                        <div class="h-4 w-px bg-[#334155]"></div>
+                        <span class="text-primary text-label-md font-label-md font-bold" id="preview-mode-label">CSV / Excel Columns</span>
+                    </div>
+                </div>
+                <div class="overflow-x-auto custom-scrollbar mt-md bg-surface-container-low border border-outline rounded-xl p-xs">
+                    <table class="w-full text-left border-collapse min-w-[700px]">
+                        <thead>
+                            <tr class="border-b border-[#334155]/60 text-tertiary font-bold text-xs" id="preview-thead-row">
+                                <th class="px-md py-sm">PRODUCT NAME</th>
+                                <th class="px-md py-sm">PRICE</th>
+                                <th class="px-md py-sm">UNITS SOLD</th>
+                                <th class="px-md py-sm">COST</th>
+                                <th class="px-md py-sm">DATE</th>
+                                <th class="px-md py-sm">CATEGORY</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-[#334155]/20" id="preview-tbody">
+                            <tr class="hover:bg-[#243041]/40 transition-colors group">
+                                <td class="px-md py-md font-body-md text-on-surface font-medium">Chicken Biryani</td>
+                                <td class="px-md py-md font-body-md text-on-surface font-mono">250.00</td>
+                                <td class="px-md py-md font-body-md text-on-surface font-mono">1,240</td>
+                                <td class="px-md py-md font-body-md text-on-surface font-mono">100.00</td>
+                                <td class="px-md py-md font-body-md text-on-surface font-mono">2026-05-01</td>
+                                <td class="px-md py-md font-body-md text-tertiary">Biryani</td>
+                            </tr>
+                            <tr class="hover:bg-[#243041]/40 transition-colors group">
+                                <td class="px-md py-md font-body-md text-on-surface font-medium">Margherita Pizza</td>
+                                <td class="px-md py-md font-body-md text-on-surface font-mono">299.00</td>
+                                <td class="px-md py-md font-body-md text-on-surface font-mono">452</td>
+                                <td class="px-md py-md font-body-md text-on-surface font-mono">120.00</td>
+                                <td class="px-md py-md font-body-md text-on-surface font-mono">2026-05-01</td>
+                                <td class="px-md py-md font-body-md text-tertiary">Pizza</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Audit Log Section -->
+            <section class="grid grid-cols-1 md:grid-cols-3 gap-lg">
+                <!-- Column requirements checklist (Bento box 1) -->
+                <div class="dashboard-card p-lg rounded-2xl space-y-md">
+                    <h4 class="font-label-md text-label-md text-primary font-bold uppercase tracking-wider">Benchmark Sales Templates</h4>
+                    <p class="font-body-md text-body-md text-tertiary text-xs leading-relaxed font-medium">Our system dynamically processes any CSV/Excel tables containing products, quantity sold, unit price, and transactions date.</p>
+                    
+                    <div class="bg-background border border-outline rounded-xl p-md text-xs font-semibold text-tertiary leading-relaxed space-y-sm">
+                        <span class="text-[10px] text-secondary font-bold block uppercase tracking-wider">Download Sample Files</span>
+                        <div class="flex items-center justify-between">
+                            <span>Standard CSV format:</span>
+                            <button type="button" onclick="downloadSample('csv')" class="text-primary hover:text-secondary font-bold flex items-center gap-xs">
+                                <span class="material-symbols-outlined text-[14px]">download</span> CSV
+                            </button>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span>Standard Excel format:</span>
+                            <button type="button" onclick="downloadSample('excel')" class="text-primary hover:text-secondary font-bold flex items-center gap-xs">
+                                <span class="material-symbols-outlined text-[14px]">download</span> Excel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Ingestion Audit Logs (Bento box 2 & 3) -->
+                <div class="md:col-span-2 dashboard-card p-lg rounded-2xl flex flex-col justify-between overflow-hidden min-h-[250px]">
+                    <h4 class="font-label-md text-label-md text-secondary font-bold uppercase tracking-wider mb-md">Ingestion Audit History</h4>
+                    <div class="overflow-x-auto overflow-y-auto max-h-[220px] custom-scrollbar flex-1">
+                        <table class="w-full text-left text-xs border-collapse min-w-[500px]">
+                            <thead>
+                                <tr class="border-b border-outline text-tertiary font-bold">
+                                    <th class="py-2">FILE NAME</th>
+                                    <th class="py-2">UPLOAD TIME</th>
+                                    <th class="py-2 text-right">RECORDS COUNT</th>
+                                    <th class="py-2 text-center">STATUS</th>
+                                </tr>
+                            </thead>
+                            <tbody id="history-body" class="divide-y divide-[#334155]/20 text-on-surface font-medium">
+                                <tr>
+                                    <td colspan="4" class="py-4 text-center text-tertiary opacity-60">Loading history logs...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Script triggers -->
+    <script src="/js/app.js"></script>
+    <script>
+        const dropZone = document.getElementById('drop-zone');
+        const dropBorder = document.getElementById('drop-border');
+        const fileInput = document.getElementById('file-input');
+        const browseBtn = document.getElementById('browse-btn');
+        const demoBtn = document.getElementById('demo-btn');
+        
+        const uploadStage = document.getElementById('upload-stage');
+        const mappingStage = document.getElementById('mapping-stage');
+        const summaryStage = document.getElementById('summary-stage');
+
+        const errorAlertBox = document.getElementById('error-alert-box');
+        const errorTitle = document.getElementById('error-title');
+        const errorMessage = document.getElementById('error-message');
+
+        const noFileCard = document.getElementById('no-file-card');
+        const selectionCard = document.getElementById('selection-card');
+        const selectionFilename = document.getElementById('selection-filename');
+        const selectionFilesize = document.getElementById('selection-filesize');
+        
+        const cancelMappingBtn = document.getElementById('cancel-mapping-btn');
+        const confirmIngestionBtn = document.getElementById('confirm-ingestion-btn');
+        const summaryResetBtn = document.getElementById('summary-reset-btn');
+
+        const pipelineStatusCard = document.getElementById('pipeline-status-card');
+        const pipelineStatusTitle = document.getElementById('pipeline-status-title');
+        const pipelineStatusDesc = document.getElementById('pipeline-status-desc');
+
+        const previewRowCount = document.getElementById('preview-row-count');
+        const previewTheadRow = document.getElementById('preview-thead-row');
+        const previewTbody = document.getElementById('preview-tbody');
+        const historyBody = document.getElementById('history-body');
+
+        const mappingsCheckRow = document.getElementById('mappings-check-row');
+        const mappingsCheckIcon = document.getElementById('mappings-check-icon');
+        const mappingsCheckLabel = document.getElementById('mappings-check-label');
+
+        let selectedFile = null;
+        let activeDatasetId = null;
+        let fileHeaders = [];
+        let autoMappedResult = {};
+
+        // System Field metadata definitions
+        const systemSchema = [
+            { id: "product_name", label: "Product Name", required: true, desc: "Text SKU identifier" },
+            { id: "price", label: "Unit Selling Price", required: true, desc: "Price of single item" },
+            { id: "units_sold", label: "Quantity Sold", required: true, desc: "Count of items purchased" },
+            { id: "date", label: "Transaction Date", required: true, desc: "Date of sales ledger record" },
+            { id: "cost", label: "Unit Cost", required: false, desc: "Price * 0.70 (Smart Fallback)" },
+            { id: "revenue", label: "Total Revenue", required: false, desc: "Price * Units (Smart Fallback)" },
+            { id: "profit", label: "Gross Profit", required: false, desc: "Revenue - Cost * Units (Smart Fallback)" },
+            { id: "category", label: "Product Category", required: false, desc: "Default to 'General' (Smart Fallback)" },
+            { id: "region", label: "Sales Region", required: false, desc: "Default to 'National' (Smart Fallback)" }
+        ];
+
+        // User profile bindings
+        const user = getCurrentUser();
+        if (user) {
+            document.getElementById('user-name-placeholder').innerText = user.full_name;
+            document.getElementById('user-role-placeholder').innerText = user.role === 'analyst' ? 'Pricing Analyst' : 'Senior Executive';
+            document.getElementById('user-avatar-placeholder').innerText = user.full_name.charAt(0).toUpperCase();
+        }
+
+        // Click actions
+        dropZone.addEventListener('click', (e) => {
+            if (e.target.closest('button')) return;
+            fileInput.click();
+        });
+        browseBtn.addEventListener('click', () => fileInput.click());
+
+        // File select trigger
+        fileInput.addEventListener('change', (e) => handleFileSelect(e.target.files[0]));
+
+        // Drag handlers
+        ['dragenter', 'dragover'].forEach(name => {
+            dropZone.addEventListener(name, (e) => {
+                e.preventDefault();
+                dropBorder.className = 'custom-dashed-border-active absolute inset-0 m-4 rounded-xl pointer-events-none';
+                dropZone.classList.add('bg-primary/5');
+            });
+        });
+
+        ['dragleave', 'drop'].forEach(name => {
+            dropZone.addEventListener(name, (e) => {
+                e.preventDefault();
+                dropBorder.className = 'custom-dashed-border absolute inset-0 m-4 rounded-xl pointer-events-none opacity-40';
+                dropZone.classList.remove('bg-primary/5');
+            });
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            handleFileSelect(e.dataTransfer.files[0]);
+        });
+
+        // Cancel / Reset Upload
+        function resetUploadState() {
+            selectedFile = null;
+            activeDatasetId = null;
+            fileHeaders = [];
+            autoMappedResult = {};
+            
+            fileInput.value = '';
+            
+            errorAlertBox.classList.add('hidden');
+            
+            uploadStage.classList.remove('hidden');
+            mappingStage.classList.add('hidden');
+            summaryStage.classList.add('hidden');
+            
+            noFileCard.classList.remove('hidden');
+            selectionCard.classList.add('hidden');
+            pipelineStatusCard.classList.add('hidden');
+
+            document.getElementById('preview-mode-label').innerText = 'CSV / Excel Columns';
+            previewTheadRow.innerHTML = '<th class="px-md py-sm">PRODUCT NAME</th><th class="px-md py-sm">PRICE</th><th class="px-md py-sm">UNITS SOLD</th><th class="px-md py-sm">COST</th><th class="px-md py-sm">DATE</th><th class="px-md py-sm">CATEGORY</th>';
+            previewTbody.innerHTML = `
+                <tr class="hover:bg-[#243041]/40 transition-colors">
+                    <td class="px-md py-md font-body-md text-on-surface">Chicken Biryani</td>
+                    <td class="px-md py-md font-body-md text-on-surface font-mono">250.00</td>
+                    <td class="px-md py-md font-body-md text-on-surface font-mono">1,240</td>
+                    <td class="px-md py-md font-body-md text-on-surface font-mono">100.00</td>
+                    <td class="px-md py-md font-body-md text-on-surface font-mono">2026-05-01</td>
+                    <td class="px-md py-md font-body-md text-tertiary">Biryani</td>
+                </tr>
+            `;
+            previewRowCount.innerText = 'Sample data display format';
+        }
+
+        cancelMappingBtn.addEventListener('click', resetUploadState);
+        summaryResetBtn.addEventListener('click', resetUploadState);
+        document.getElementById('clear-selection-btn').addEventListener('click', resetUploadState);
+
+        // Upload and Analyze Step
+        async function handleFileSelect(file) {
+            if (!file) return;
+            const ext = file.name.split('.').pop().toLowerCase();
+            if (!['csv', 'xlsx', 'xls'].includes(ext)) {
+                showError('File Validation Failure', 'Unsupported file format. Please upload a CSV or Excel spreadsheet.');
+                return;
+            }
+
+            selectedFile = file;
+            selectionFilename.innerText = file.name;
+            selectionFilesize.innerText = `${(file.size / 1024).toFixed(1)} KB`;
+
+            noFileCard.classList.add('hidden');
+            selectionCard.classList.remove('hidden');
+            
+            pipelineStatusCard.classList.remove('hidden');
+            pipelineStatusTitle.innerText = 'Analyzing File Structure...';
+            pipelineStatusDesc.innerText = 'Extracting headers and generating schema recommendations.';
+
+            errorAlertBox.classList.add('hidden');
+
+            const formData = new FormData();
+            formData.append('file', selectedFile);
+
+            try {
+                const response = await fetch('/api/v1/upload/analyze', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${getAuthToken()}`
+                    },
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    const err = await response.json();
+                    throw new Error(err.detail || 'Analysis failed.');
+                }
+
+                const result = await response.json();
+                activeDatasetId = result.dataset_id;
+                fileHeaders = result.headers;
+                autoMappedResult = result.auto_mappings;
+
+                pipelineStatusCard.classList.add('hidden');
+                
+                // Show Mapping Config Screen
+                uploadStage.classList.add('hidden');
+                mappingStage.classList.remove('hidden');
+                
+                // Check list update
+                document.getElementById('analyzing-check-label').innerText = 'Analysis completed successfully';
+                mappingsCheckRow.classList.remove('opacity-50');
+                mappingsCheckIcon.innerText = 'edit';
+                mappingsCheckIcon.className = 'material-symbols-outlined text-secondary text-[16px] animate-pulse';
+                mappingsCheckLabel.className = 'text-label-md font-label-md text-secondary font-bold';
+
+                renderMappingFields(result.headers, result.auto_mappings);
+                renderPreviewTable(result.headers, result.preview_rows);
+
+            } catch (err) {
+                pipelineStatusCard.classList.add('hidden');
+                resetUploadState();
+                showError('Ingestion Extraction Failed', err.message);
+            }
+        }
+
+        // Render Dropdown form for schema assignment
+        function renderMappingFields(headers, autoMappings) {
+            const container = document.getElementById('mapping-fields-container');
+            let html = '';
+
+            systemSchema.forEach(field => {
+                const fieldId = field.id;
+                const fieldLabel = field.label;
+                const isRequired = field.required;
+                const description = field.desc;
+                
+                // Try finding pre-selected mapped value
+                const preselected = autoMappings[fieldId] || "";
+
+                let optionsHtml = '';
+                // Add none/calculate options for non-required fields
+                if (!isRequired) {
+                    optionsHtml += `<option value="" ${preselected === "" ? "selected" : ""}>[Auto Fallback: ${description}]</option>`;
+                } else {
+                    optionsHtml += `<option value="">-- Assign Column --</option>`;
+                }
+
+                headers.forEach(header => {
+                    const isSelected = header === preselected ? "selected" : "";
+                    optionsHtml += `<option value="${header}" ${isSelected}>${header}</option>`;
+                });
+
+                html += `
+                    <div class="bg-background border border-outline rounded-xl p-md space-y-sm flex flex-col justify-between shadow-inner">
+                        <div>
+                            <div class="flex items-center justify-between">
+                                <label class="text-xs font-bold text-on-surface flex items-center gap-xs">
+                                    <span>${fieldLabel}</span>
+                                    ${isRequired ? '<span class="text-error font-extrabold text-[10px] uppercase">Required</span>' : '<span class="text-tertiary font-bold text-[9px] uppercase">Optional</span>'}
+                                </label>
+                            </div>
+                            <p class="text-[10px] text-tertiary mt-xs">${description}</p>
+                        </div>
+                        <select data-field="${fieldId}" class="mt-xs bg-surface-container border border-outline rounded-xl px-sm py-1.5 text-xs text-on-surface focus:ring-2 focus:ring-[#3B82F6]/25 focus:border-primary w-full outline-none">
+                            ${optionsHtml}
+                        </select>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        // Render spreadsheet preview table
+        function renderPreviewTable(headers, previewRows) {
+            let headerHtml = '';
+            headers.forEach(h => {
+                headerHtml += `<th class="px-md py-2 text-xs uppercase tracking-wider font-mono font-bold">${h}</th>`;
+            });
+            previewTheadRow.innerHTML = headerHtml;
+
+            let rowsHtml = '';
+            previewRows.forEach(row => {
+                rowsHtml += `<tr class="hover:bg-[#243041]/40 border-b border-[#334155]/20 transition-colors">`;
+                headers.forEach(h => {
+                    const val = row[h] !== null && row[h] !== undefined ? row[h] : '<span class="text-error opacity-60">NULL</span>';
+                    rowsHtml += `<td class="px-md py-2 font-body-md text-xs text-on-surface font-mono">${val}</td>`;
+                });
+                rowsHtml += `</tr>`;
+            });
+            previewTbody.innerHTML = rowsHtml;
+            document.getElementById('preview-mode-label').innerText = 'Raw Upload Column Headers';
+            previewRowCount.innerText = `Previewing first ${previewRows.length} lines of spreadsheet`;
+        }
+
+        // Confirm column mappings and trigger processing
+        confirmIngestionBtn.addEventListener('click', async () => {
+            if (!activeDatasetId) return;
+
+            // Gather inputs from selects
+            const mappings = {};
+            let missingRequired = false;
+
+            const selects = document.querySelectorAll('#mapping-fields-container select');
+            selects.forEach(select => {
+                const fieldId = select.dataset.field;
+                const value = select.value;
+                mappings[fieldId] = value || null;
+
+                const meta = systemSchema.find(s => s.id === fieldId);
+                if (meta.required && !value) {
+                    missingRequired = true;
+                }
+            });
+
+            if (missingRequired) {
+                showError('Mapping Validation Error', 'Please map all required system fields (Product Name, Price, Quantity Sold, Date) before triggering ingestion.');
+                return;
+            }
+
+            confirmIngestionBtn.disabled = true;
+            confirmIngestionBtn.innerHTML = '<span>Processing Ingestion...</span>';
+            
+            pipelineStatusCard.classList.remove('hidden');
+            pipelineStatusTitle.innerText = 'Executing Pipeline...';
+            pipelineStatusDesc.innerText = 'Calculating price elasticity index and training ML demand forecast projections.';
+
+            try {
+                const response = await fetch('/api/v1/upload/ingest', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${getAuthToken()}`
+                    },
+                    body: JSON.stringify({
+                        dataset_id: activeDatasetId,
+                        mappings: mappings
+                    })
+                });
+
+                if (!response.ok) {
+                    const err = await response.json();
+                    throw new Error(err.detail || 'Ingestion request failed.');
+                }
+
+                startPollingStatus(activeDatasetId);
+
+            } catch (err) {
+                confirmIngestionBtn.disabled = false;
+                confirmIngestionBtn.innerHTML = '<span>Confirm & Ingest</span>';
+                pipelineStatusCard.classList.add('hidden');
+                showError('Ingestion Refused', err.message);
+            }
+        });
+
+        // Trigger Demo Seeding
+        demoBtn.addEventListener('click', async () => {
+            demoBtn.disabled = true;
+            demoBtn.innerHTML = '<span>Loading Demo...</span>';
+            
+            noFileCard.classList.add('hidden');
+            pipelineStatusCard.classList.remove('hidden');
+            pipelineStatusTitle.innerText = 'Provisioning Demo Dataset...';
+            pipelineStatusDesc.innerText = 'Injecting benchmark transaction records into database.';
+
+            try {
+                const response = await fetch('/api/v1/upload/demo', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${getAuthToken()}`
+                    }
+                });
+
+                if (!response.ok) {
+                    const err = await response.json();
+                    throw new Error(err.detail || 'Demo trigger failed.');
+                }
+
+                const dataset = await response.json();
+                
+                // Update file details
+                selectionCard.classList.remove('hidden');
+                selectionFilename.innerText = dataset.file_name;
+                selectionFilesize.innerText = '201.2 KB';
+                document.getElementById('analyzing-check-label').innerText = 'Demo template loaded';
+
+                startPollingStatus(dataset.id);
+
+            } catch (err) {
+                demoBtn.disabled = false;
+                demoBtn.innerHTML = '<span>Try Demo Dataset</span>';
+                pipelineStatusCard.classList.add('hidden');
+                showError('Demo Provisioning Failed', err.message);
+            }
+        });
+
+        // Status Polling Loop
+        function startPollingStatus(datasetId) {
+            pipelineStatusCard.classList.remove('hidden');
+            pipelineStatusTitle.innerText = 'Compiling ML Insights...';
+            pipelineStatusDesc.innerText = 'Running data cleaning, elasticity coefficient regression, and future demand forecasting.';
+
+            const interval = setInterval(async () => {
+                try {
+                    const info = await apiRequest(`/upload/status/${datasetId}`);
+                    if (!info) return;
+
+                    if (info.status === 'processed') {
+                        clearInterval(interval);
+                        pipelineStatusCard.classList.add('hidden');
+                        
+                        // Set active dataset ID in StateStore to trigger reactivity across the app
+                        StateStore.setActiveDataset(datasetId);
+                        
+                        // Parse Summary stats metadata
+                        const summary = JSON.parse(info.summary_metadata || "{}");
+                        showSuccessSummary(summary);
+                        loadUploadHistory();
+                    } else if (info.status === 'failed') {
+                        clearInterval(interval);
+                        pipelineStatusCard.classList.add('hidden');
+                        confirmIngestionBtn.disabled = false;
+                        confirmIngestionBtn.innerHTML = '<span>Confirm & Ingest</span>';
+                        demoBtn.disabled = false;
+                        demoBtn.innerHTML = '<span>Try Demo Dataset</span>';
+                        showError('Ingestion Pipeline Failed', 'Data cleansing errors detected. Column alignment checks failed or dates were corrupt.');
+                        loadUploadHistory();
+                    }
+                } catch (e) {
+                    clearInterval(interval);
+                    pipelineStatusCard.classList.add('hidden');
+                    confirmIngestionBtn.disabled = false;
+                    confirmIngestionBtn.innerHTML = '<span>Confirm & Ingest</span>';
+                    demoBtn.disabled = false;
+                    demoBtn.innerHTML = '<span>Try Demo Dataset</span>';
+                    showError('System Ingestion Error', e.message);
+                }
+            }, 2000);
+        }
+
+        // Display Ingestion Success Panel
+        function showSuccessSummary(summary) {
+            mappingStage.classList.add('hidden');
+            uploadStage.classList.add('hidden');
+            summaryStage.classList.remove('hidden');
+
+            document.getElementById('sum-rows-processed').innerText = (summary.rows_processed || 0).toLocaleString();
+            document.getElementById('sum-dup-removed').innerText = (summary.duplicates_removed || 0).toLocaleString();
+            document.getElementById('sum-missing-fixed').innerText = (summary.missing_values_fixed || 0).toLocaleString();
+            document.getElementById('sum-detected-products').innerText = (summary.detected_products || 0).toLocaleString();
+            document.getElementById('sum-detected-categories').innerText = summary.detected_categories || 1;
+            document.getElementById('sum-date-range').innerText = summary.date_range || 'N/A';
+            document.getElementById('sum-total-revenue').innerText = formatCurrency(summary.total_revenue || 0.0);
+
+            // Update check indicators
+            mappingsCheckIcon.innerText = 'check_circle';
+            mappingsCheckIcon.className = 'material-symbols-outlined text-success text-[16px]';
+            mappingsCheckLabel.className = 'text-label-md font-label-md text-success font-bold';
+            mappingsCheckLabel.innerText = 'Mapping ingestion compiled';
+        }
+
+        // Show detailed error messaging
+        function showError(title, msg) {
+            errorTitle.innerText = title;
+            errorMessage.innerText = msg;
+            errorAlertBox.classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // API download helper
+        async function downloadSample(format) {
+            try {
+                const response = await fetch(`/api/v1/upload/sample?format=${format}`, {
+                    headers: {
+                        'Authorization': `Bearer ${getAuthToken()}`
+                    }
+                });
+                if (!response.ok) {
+                    const err = await response.json();
+                    throw new Error(err.detail || 'Download failed.');
+                }
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = format === 'excel' ? 'sales_sample.xlsx' : 'sales_sample.csv';
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                window.URL.revokeObjectURL(url);
+            } catch (err) {
+                showError('Template Download Failed', err.message);
+            }
+        }
+
+        // History logs
+        async function loadUploadHistory() {
+            try {
+                const list = await apiRequest('/upload/history');
+                if (!list) return;
+
+                if (list.length === 0) {
+                    historyBody.innerHTML = `<tr><td colspan="4" class="py-4 text-center text-tertiary opacity-60 font-semibold">No uploads recorded. Ingest a dataset.</td></tr>`;
+                    return;
+                }
+
+                let html = '';
+                list.forEach(item => {
+                    let statusBadge = '';
+                    if (item.status === 'processed') {
+                        statusBadge = `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-success/15 text-success border border-success/20 uppercase">Processed</span>`;
+                    } else if (item.status === 'failed') {
+                        statusBadge = `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-error/15 text-error border border-error/20 uppercase">Failed</span>`;
+                    } else {
+                        statusBadge = `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-primary/15 text-primary border border-primary/20 uppercase animate-pulse">${item.status}</span>`;
+                    }
+
+                    html += `
+                        <tr class="hover:bg-surface-container-high/40 transition-colors">
+                            <td class="py-3 font-semibold text-on-surface text-xs font-mono max-w-[180px] truncate" title="${item.file_name}">${item.file_name}</td>
+                            <td class="py-3 text-tertiary">${new Date(item.upload_time).toLocaleString()}</td>
+                            <td class="py-3 text-right font-mono text-on-surface font-semibold">${item.total_records.toLocaleString()}</td>
+                            <td class="py-3 text-center">${statusBadge}</td>
+                        </tr>
+                    `;
+                });
+                historyBody.innerHTML = html;
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        loadUploadHistory();
+    </script>
+</body>
+</html>
