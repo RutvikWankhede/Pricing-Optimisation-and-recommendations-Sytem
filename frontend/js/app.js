@@ -26,10 +26,11 @@ function setCurrentUser(user) {
 // 2. Route Protection Guard
 function checkAuthentication() {
     const token = getAuthToken();
-    const isLoginPage = window.location.pathname === '/' || window.location.pathname.endsWith('index.html');
+    const path = window.location.pathname;
+    const isLoginPage = path === '/' || path.endsWith('index.html') || path.endsWith('index');
     
     if (!token && !isLoginPage) {
-        window.location.href = '/index.html';
+        window.location.href = '/';
     } else if (token && isLoginPage) {
         window.location.href = '/pages/dashboard.html';
     }
@@ -62,11 +63,14 @@ async function apiRequest(endpoint, options = {}) {
         if (response.status === 401) {
             // Token expired or invalid, redirect to login
             removeAuthToken();
-            window.location.href = '/index.html';
+            window.location.href = '/';
             return null;
         }
         
         if (!response.ok) {
+            if (response.status === 502 || response.status === 503) {
+                throw new Error("Backend is waking up on Render. Please wait ~30 seconds and try again.");
+            }
             const errorData = await response.json().catch(() => ({}));
             throw new Error(errorData.detail || `HTTP error! status: ${response.status}`);
         }
@@ -80,6 +84,9 @@ async function apiRequest(endpoint, options = {}) {
         return await response.json();
     } catch (error) {
         console.error(`API Error on ${endpoint}:`, error);
+        if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
+            throw new Error("Network error: Backend might be waking up on Render. Please wait ~30 seconds and refresh.");
+        }
         throw error;
     }
 }
@@ -202,7 +209,7 @@ function injectSidebar() {
     if (logoutBtn) {
         logoutBtn.addEventListener('click', () => {
             removeAuthToken();
-            window.location.href = '/index.html';
+            window.location.href = '/';
         });
     }
 

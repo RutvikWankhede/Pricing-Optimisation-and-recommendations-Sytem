@@ -505,7 +505,29 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     } catch (error) {
         console.error(error);
-        document.getElementById('kpi-grid').innerHTML = `<div class="bg-error/10 border border-error/20 text-error p-6 rounded-2xl col-span-4 text-sm shadow-lg">Failed to load overview analytics metrics: ${error.message}</div>`;
+        let errorHtml = '';
+        if (error.message && error.message.includes('waking up')) {
+            errorHtml = `
+                <div class="flex flex-col items-center justify-center p-12 text-center col-span-1 sm:col-span-2 lg:col-span-4 bg-[#0B0F19]/50 rounded-2xl border border-blue-500/20 backdrop-blur-md">
+                    <div class="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+                    <h3 class="text-xl font-bold text-slate-100 mb-2">Backend Waking Up</h3>
+                    <p class="text-slate-400">The free Render instance is spinning up. This usually takes about 30-50 seconds.</p>
+                    <button onclick="window.location.reload()" class="mt-6 px-6 py-2 bg-blue-500/20 text-blue-400 border border-blue-500/30 rounded-xl hover:bg-blue-500/30 transition-colors">Retry Now</button>
+                </div>
+            `;
+        } else {
+            errorHtml = `<div class="bg-error/10 border border-error/20 text-error p-6 rounded-2xl col-span-1 sm:col-span-2 lg:col-span-4 text-sm shadow-lg">Failed to load analytics: ${error.message}</div>`;
+        }
+        const kpiGrid = document.getElementById('kpi-grid');
+        if (kpiGrid) {
+            kpiGrid.className = "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 w-full";
+            kpiGrid.innerHTML = errorHtml;
+        }
+        // Also hide the chart containers if there's an error
+        const mainContent = document.getElementById('dashboard-data-container');
+        if (mainContent) {
+            mainContent.classList.add('hidden');
+        }
     }
 
     // 4. Set up Event Listeners for Pill selectors
