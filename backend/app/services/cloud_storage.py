@@ -1,43 +1,38 @@
 import os
-import cloudinary
-import cloudinary.uploader
-from cloudinary.utils import cloudinary_url
+try:
+    import cloudinary
+    import cloudinary.uploader
+    from cloudinary.utils import cloudinary_url
+    CLOUDINARY_AVAILABLE = True
+except ImportError:
+    CLOUDINARY_AVAILABLE = False
 
-# Initialise Cloudinary configuration from environment variables
-cloudinary.config(
-    cloud_name=os.getenv("CLOUDINARY_CLOUD_NAME"),
-    api_key=os.getenv("CLOUDINARY_API_KEY"),
-    api_secret=os.getenv("CLOUDINARY_API_SECRET"),
-    secure=True,
-)
+if CLOUDINARY_AVAILABLE:
+    cloudinary.config(
+        cloud_name=os.getenv("CLOUDINARY_CLOUD_NAME"),
+        api_key=os.getenv("CLOUDINARY_API_KEY"),
+        api_secret=os.getenv("CLOUDINARY_API_SECRET"),
+        secure=True,
+    )
 
 def upload_file(file_bytes: bytes, filename: str) -> str:
-    """Upload a file to Cloudinary and return the secure URL.
+    """Upload a file and return a URL.
 
-    This wrapper handles missing Cloudinary configuration gracefully.
-    If required environment variables are not set, a RuntimeError is raised
-    and the caller can decide how to proceed (e.g., fallback to local storage).
+    If Cloudinary is configured and available, the file is uploaded to Cloudinary.
+    Otherwise, the file is saved locally under a 'uploads' directory and a file URL is returned.
     """
-    # Verify Cloudinary configuration
-    if not all([os.getenv("CLOUDINARY_CLOUD_NAME"), os.getenv("CLOUDINARY_API_KEY"), os.getenv("CLOUDINARY_API_SECRET")]):
-        raise RuntimeError("Cloudinary environment variables not configured")
-    result = cloudinary.uploader.upload(file_bytes, public_id=filename, resource_type="raw")
-    return result.get("secure_url")
-    """Upload a file to Cloudinary and return the secure URL.
-
-    Parameters
-    ----------
-    file_bytes: bytes
-        The raw file content.
-    filename: str
-        Original filename (used for public_id).
-    Returns
-    -------
-    str
-        Secure URL of the uploaded asset.
-    """
-    result = cloudinary.uploader.upload(file_bytes, public_id=filename, resource_type="raw")
-    return result.get("secure_url")
+    if CLOUDINARY_AVAILABLE and all([os.getenv("CLOUDINARY_CLOUD_NAME"), os.getenv("CLOUDINARY_API_KEY"), os.getenv("CLOUDINARY_API_SECRET")]):
+        result = cloudinary.uploader.upload(file_bytes, public_id=filename, resource_type="raw")
+        return result.get("secure_url")
+    else:
+        # Fallback to local storage
+        upload_dir = os.path.join(os.path.dirname(__file__), "..", "..", "uploads")
+        os.makedirs(upload_dir, exist_ok=True)
+        file_path = os.path.join(upload_dir, filename)
+        with open(file_path, "wb") as f:
+            f.write(file_bytes)
+        # Return a file URL path (could be served statically later)
+        return f"file://{os.path.abspath(file_path)}"
 
 def get_file_url(public_id: str) -> str:
     """Retrieve the URL for an already uploaded asset.

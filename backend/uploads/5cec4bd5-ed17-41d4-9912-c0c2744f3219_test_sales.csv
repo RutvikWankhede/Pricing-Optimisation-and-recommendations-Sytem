@@ -1,0 +1,11 @@
+product name,price,quantity_sold,cost,date,revenue,category,region
+Chicken Biryani,250,5,100,2026-06-01,1250,Biryani,Chennai
+Chicken Biryani,250,4,100,2026-06-02,1000,Biryani,Chennai
+Chicken Biryani,240,7,100,2026-06-03,1680,Biryani,Chennai
+Chicken Biryani,260,3,100,2026-06-04,780,Biryani,Chennai
+Chicken Biryani,250,6,100,2026-06-05,1500,Biryani,Chennai
+Margherita Pizza,299,2,120,2026-06-01,598,Pizza,Bangalore
+Margherita Pizza,299,3,120,2026-06-02,897,Pizza,Bangalore
+Margherita Pizza,289,5,120,2026-06-03,1445,Pizza,Bangalore
+Margherita Pizza,299,2,120,2026-06-04,598,Pizza,Bangalore
+Margherita Pizza,319,4,120,2026-06-05,1276,Pizza,Bangalore

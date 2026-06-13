@@ -8,6 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
     <link href="/css/styles.css" rel="stylesheet"/>
+    <link href="/css/dashboard.css" rel="stylesheet"/>
     <!-- Chart.js and Plugins via CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom"></script>
@@ -125,7 +126,6 @@
       }
     </style>
 </head>
-</head>
 <body class="flex min-h-screen text-slate-100 bg-background">
     <!-- SideNavBar -->
     <aside id="sidebar-placeholder" class="hidden md:flex h-screen w-64 flex-col bg-[#121A2F]/85 border-r border-white/5 py-md px-sm gap-xs flex-shrink-0 sticky top-0 z-50"></aside>
@@ -235,19 +235,39 @@
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
                     <!-- Large Chart: Revenue Trend (Glassmorphic Container) -->
                     <div class="lg:col-span-8 dashboard-card p-6 flex flex-col hover:border-[#3B82F6]/50 transition-all duration-300 relative group overflow-hidden">
-                        <div class="flex flex-col sm:flex-row justify-between sm:items-center mb-6 gap-2">
+                        <div class="flex flex-col xl:flex-row justify-between xl:items-center mb-6 gap-4 border-b border-white/5 pb-4">
                             <div>
                                 <span class="text-[10px] text-[#14B8A6] font-bold uppercase tracking-widest block mb-1">Timeline Analysis</span>
                                 <h3 class="font-headline-md text-[18px] text-slate-50 font-bold">Revenue & Profit Trend</h3>
                                 <p class="text-xs text-slate-400 mt-1 font-medium">Aggregated historical performance with moving-average smoothing.</p>
                             </div>
-                            <!-- Interactive Control Badge -->
-                            <div class="flex items-center gap-2 self-start sm:self-center">
-                                <span class="text-[10px] font-medium text-blue-400 bg-blue-500/10 border border-blue-500/20 px-2.5 py-1 rounded-full flex items-center gap-1">
-                                    <span class="material-symbols-outlined text-[12px]">pan_tool</span> Drag to Pan / Scroll to Zoom
-                                </span>
-                                <button id="reset-zoom-btn" class="text-[10px] font-semibold text-slate-400 hover:text-white bg-white/5 border border-white/10 px-2.5 py-1 rounded-full flex items-center gap-1 transition-all cursor-pointer">
-                                    <span class="material-symbols-outlined text-[12px]">refresh</span> Reset Zoom
+                            
+                            <!-- Interactive Control Badge & Pills -->
+                            <div class="flex flex-wrap items-center gap-3">
+                                <!-- Interval Toggle -->
+                                <div class="flex bg-slate-900/60 p-1 rounded-xl border border-white/5 gap-1 h-8 items-center">
+                                    <button id="btn-interval-daily" class="interval-pill active">Daily</button>
+                                    <button id="btn-interval-weekly" class="interval-pill">Weekly</button>
+                                    <button id="btn-interval-monthly" class="interval-pill">Monthly</button>
+                                </div>
+                                
+                                <!-- Metric Toggle -->
+                                <div class="flex bg-slate-900/60 p-1 rounded-xl border border-white/5 gap-1 h-8 items-center">
+                                    <button id="btn-metric-revenue" class="metric-pill active">Revenue</button>
+                                    <button id="btn-metric-profit" class="metric-pill">Profit</button>
+                                    <button id="btn-metric-orders" class="metric-pill">Orders</button>
+                                </div>
+
+                                <!-- Category Dropdown -->
+                                <div class="relative">
+                                    <select id="category-filter-dropdown" class="h-8 bg-slate-900/60 border border-white/5 rounded-xl px-3 pr-8 py-0 text-xs font-semibold text-slate-200 focus:ring-2 focus:ring-blue-500/25 outline-none cursor-pointer">
+                                        <option value="">All Categories</option>
+                                    </select>
+                                </div>
+                                
+                                <!-- Reset Zoom -->
+                                <button id="reset-zoom-btn" class="h-8 text-[11px] font-semibold text-slate-400 hover:text-white bg-slate-900/60 hover:bg-slate-800/80 border border-white/5 px-3 rounded-xl flex items-center justify-center gap-1.5 transition-all cursor-pointer">
+                                    <span class="material-symbols-outlined text-[14px]">refresh</span> Reset Zoom
                                 </button>
                             </div>
                         </div>
@@ -320,527 +340,7 @@
 
     <!-- Script triggers -->
     <script src="/js/app.js"></script>
-    <script>
-        // Chart Optimization, Aggregation & Smoothing Utilities
-        function getCategoryColor(category) {
-            const catLower = category.toLowerCase();
-            if (catLower.includes('biryani')) return '#3B82F6';
-            if (catLower.includes('pizza')) return '#14B8A6';
-            if (catLower.includes('burger')) return '#8B5CF6';
-            if (catLower.includes('chinese') || catLower.includes('noodle')) return '#F97316';
-            if (catLower.includes('sushi')) return '#EF4444';
-            if (catLower.includes('pasta')) return '#10B981';
-            if (catLower.includes('beverage')) return '#EC4899';
-            if (catLower.includes('dessert')) return '#F59E0B';
-            if (catLower.includes('salad')) return '#84CC16';
-            return '#64748B'; // General
-        }
-
-        function calculateMovingAverage(data, windowSize = 3) {
-            const result = [];
-            for (let i = 0; i < data.length; i++) {
-                let sum = 0;
-                let count = 0;
-                for (let j = Math.max(0, i - windowSize + 1); j <= i; j++) {
-                    sum += data[j];
-                    count++;
-                }
-                result.push(sum / count);
-            }
-            return result;
-        }
-
-        function optimizeChartData(trendsData) {
-            if (!trendsData || trendsData.length === 0) return { labels: [], revenue: [], profit: [] };
-            
-            // Sort chronologically
-            const sortedData = [...trendsData].sort((a, b) => new Date(a.label) - new Date(b.label));
-            const len = sortedData.length;
-            let aggregated = [];
-            
-            if (len > 200) {
-                // Aggregate daily data into monthly averages
-                const groups = {};
-                sortedData.forEach(item => {
-                    const key = item.label.substring(0, 7); // YYYY-MM
-                    if (!groups[key]) groups[key] = { revenueSum: 0, profitSum: 0, count: 0 };
-                    groups[key].revenueSum += item.revenue;
-                    groups[key].profitSum += item.profit;
-                    groups[key].count += 1;
-                });
-                
-                Object.keys(groups).sort().forEach(key => {
-                    const dateObj = new Date(key + '-02'); // Avoid timezone shifts
-                    const monthLabel = dateObj.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
-                    aggregated.push({
-                        label: monthLabel,
-                        revenue: groups[key].revenueSum / groups[key].count,
-                        profit: groups[key].profitSum / groups[key].count
-                    });
-                });
-            } else if (len > 50) {
-                // Aggregate daily data into weekly averages
-                const groups = {};
-                sortedData.forEach(item => {
-                    const date = new Date(item.label);
-                    const day = date.getDay();
-                    const diff = date.getDate() - day + (day === 0 ? -6 : 1); // Monday as start of week
-                    const monday = new Date(date.setDate(diff));
-                    const key = monday.toISOString().split('T')[0];
-                    
-                    if (!groups[key]) groups[key] = { revenueSum: 0, profitSum: 0, count: 0 };
-                    groups[key].revenueSum += item.revenue;
-                    groups[key].profitSum += item.profit;
-                    groups[key].count += 1;
-                });
-                
-                Object.keys(groups).sort().forEach(key => {
-                    const dateObj = new Date(key);
-                    const weekLabel = 'Wk of ' + dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-                    aggregated.push({
-                        label: weekLabel,
-                        revenue: groups[key].revenueSum / groups[key].count,
-                        profit: groups[key].profitSum / groups[key].count
-                    });
-                });
-            } else {
-                // Daily data
-                aggregated = sortedData.map(item => {
-                    const dateObj = new Date(item.label);
-                    const dayLabel = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-                    return {
-                        label: dayLabel,
-                        revenue: item.revenue,
-                        profit: item.profit
-                    };
-                });
-            }
-            
-            const rawRevenue = aggregated.map(t => t.revenue);
-            const rawProfit = aggregated.map(t => t.profit);
-            
-            // Smooth values
-            const smoothedRevenue = calculateMovingAverage(rawRevenue, 3);
-            const smoothedProfit = calculateMovingAverage(rawProfit, 3);
-            
-            return {
-                labels: aggregated.map(t => t.label),
-                revenue: smoothedRevenue,
-                profit: smoothedProfit
-            };
-        }
-
-        document.addEventListener('DOMContentLoaded', async () => {
-            const user = getCurrentUser();
-            if (user) {
-                document.getElementById('user-name-placeholder').innerText = user.full_name;
-                document.getElementById('user-role-placeholder').innerText = user.role === 'analyst' ? 'Pricing Analyst' : 'Senior Executive';
-                document.getElementById('user-avatar-placeholder').innerText = user.full_name.charAt(0).toUpperCase();
-            }
-
-            try {
-                const data = await apiRequest('/dashboard/summary');
-                if (!data) return;
-
-                if (data.sales_trends.length === 0) {
-                    document.getElementById('dashboard-data-container').classList.add('hidden');
-                    document.getElementById('dashboard-empty-state').classList.remove('hidden');
-                    return;
-                }
-
-                // AI Insights Generation
-                try {
-                    const recs = await apiRequest('/pricing/recommendations');
-                    if (recs && recs.length > 0) {
-                        const banner = document.getElementById('ai-insights-banner');
-                        const insightsList = document.getElementById('ai-insights-list');
-                        
-                        let insights = [];
-                        
-                        // Parse recommendations to find interesting behaviors
-                        recs.forEach(r => {
-                            let reasonObj = {};
-                            let isJson = false;
-                            try {
-                                reasonObj = JSON.parse(r.recommendation_reason);
-                                isJson = typeof reasonObj === 'object' && reasonObj !== null;
-                            } catch (e) {
-                                isJson = false;
-                            }
-                            
-                            const changePct = ((r.recommended_price - r.current_price) / r.current_price * 100);
-                            
-                            if (changePct > 1.0) {
-                                insights.push(`<strong>${r.product_name}</strong> maintained demand after recent price increases, indicating lower price sensitivity.`);
-                            } else if (changePct < -1.0) {
-                                insights.push(`<strong>${r.product_name}</strong> displays highly price-sensitive demand. Lowering the rate by ${Math.abs(changePct).toFixed(0)}% is expected to optimize margins by growing sales volume.`);
-                            } else {
-                                insights.push(`<strong>${r.product_name}</strong> is priced optimally. Volume forecasts remain steady under the current pricing structure.`);
-                            }
-                        });
-                        
-                        // Render up to 3 insights
-                        if (insights.length > 0) {
-                            banner.classList.remove('hidden');
-                            insightsList.innerHTML = insights.slice(0, 3).map(ins => `<li>${ins}</li>`).join('');
-                        }
-                    }
-                } catch (e) {
-                    console.error('Failed to load AI Insights:', e);
-                }
-
-                const kpis = data.kpis;
-                const kpiGrid = document.getElementById('kpi-grid');
-                kpiGrid.className = "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 w-full";
-                kpiGrid.innerHTML = `
-                    <!-- Card 1: Revenue -->
-                    <div class="dashboard-card card-glow-blue p-6 flex flex-col justify-between relative overflow-hidden group">
-                        <div class="absolute -right-8 -top-8 w-24 h-24 bg-blue-500/10 rounded-full blur-xl group-hover:bg-blue-500/20 transition-all duration-300"></div>
-                        <div class="flex items-center justify-between z-10">
-                            <span class="text-xs font-semibold uppercase tracking-wider text-slate-400">${kpis.total_revenue.title}</span>
-                            <div class="w-8 h-8 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400">
-                                <span class="material-symbols-outlined text-[18px]">payments</span>
-                            </div>
-                        </div>
-                        <div class="mt-4 z-10">
-                            <div class="text-2xl lg:text-3xl font-bold text-slate-50 tracking-tight font-sans truncate" title="${kpis.total_revenue.value}">${kpis.total_revenue.value}</div>
-                            <div class="flex items-center gap-2 mt-2">
-                                <span class="${kpis.total_revenue.trend === 'up' ? 'badge-trend-up' : 'badge-trend-down'}">${kpis.total_revenue.change}</span>
-                                <span class="text-[10px] text-slate-500">vs last period</span>
-                            </div>
-                        </div>
-                        <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 to-cyan-400 opacity-50"></div>
-                    </div>
-                    
-                    <!-- Card 2: Profit -->
-                    <div class="dashboard-card card-glow-emerald p-6 flex flex-col justify-between relative overflow-hidden group">
-                        <div class="absolute -right-8 -top-8 w-24 h-24 bg-emerald-500/10 rounded-full blur-xl group-hover:bg-emerald-500/20 transition-all duration-300"></div>
-                        <div class="flex items-center justify-between z-10">
-                            <span class="text-xs font-semibold uppercase tracking-wider text-slate-400">${kpis.total_profit.title}</span>
-                            <div class="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
-                                <span class="material-symbols-outlined text-[18px]">trending_up</span>
-                            </div>
-                        </div>
-                        <div class="mt-4 z-10">
-                            <div class="text-2xl lg:text-3xl font-bold text-slate-50 tracking-tight font-sans truncate" title="${kpis.total_profit.value}">${kpis.total_profit.value}</div>
-                            <div class="flex items-center gap-2 mt-2">
-                                <span class="${kpis.total_profit.trend === 'up' ? 'badge-trend-up' : 'badge-trend-down'}">${kpis.total_profit.change}</span>
-                                <span class="text-[10px] text-slate-500">vs last period</span>
-                            </div>
-                        </div>
-                        <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 to-teal-400 opacity-50"></div>
-                    </div>
- 
-                    <!-- Card 3: Margin -->
-                    <div class="dashboard-card card-glow-purple p-6 flex flex-col justify-between relative overflow-hidden group">
-                        <div class="absolute -right-8 -top-8 w-24 h-24 bg-purple-500/10 rounded-full blur-xl group-hover:bg-purple-500/20 transition-all duration-300"></div>
-                        <div class="flex items-center justify-between z-10">
-                            <span class="text-xs font-semibold uppercase tracking-wider text-slate-400">${kpis.avg_margin.title}</span>
-                            <div class="w-8 h-8 rounded-lg bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400">
-                                <span class="material-symbols-outlined text-[18px]">percent</span>
-                            </div>
-                        </div>
-                        <div class="mt-4 z-10">
-                            <div class="text-2xl lg:text-3xl font-bold text-slate-50 tracking-tight font-sans truncate" title="${kpis.avg_margin.value}">${kpis.avg_margin.value}</div>
-                            <div class="flex items-center gap-2 mt-2">
-                                <span class="${kpis.avg_margin.trend === 'up' ? 'badge-trend-up' : 'badge-trend-down'}">${kpis.avg_margin.change}</span>
-                                <span class="text-[10px] text-slate-500">vs last period</span>
-                            </div>
-                        </div>
-                        <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-purple-500 to-pink-500 opacity-50"></div>
-                    </div>
- 
-                    <!-- Card 4: Products -->
-                    <div class="dashboard-card card-glow-orange p-6 flex flex-col justify-between relative overflow-hidden group">
-                        <div class="absolute -right-8 -top-8 w-24 h-24 bg-orange-500/10 rounded-full blur-xl group-hover:bg-orange-500/20 transition-all duration-300"></div>
-                        <div class="flex items-center justify-between z-10">
-                            <span class="text-xs font-semibold uppercase tracking-wider text-slate-400">${kpis.active_products.title}</span>
-                            <div class="w-8 h-8 rounded-lg bg-orange-500/10 border border-orange-500/20 flex items-center justify-center text-orange-400">
-                                <span class="material-symbols-outlined text-[18px]">inventory_2</span>
-                            </div>
-                        </div>
-                        <div class="mt-4 z-10">
-                            <div class="text-2xl lg:text-3xl font-bold text-slate-50 tracking-tight font-sans truncate" title="${kpis.active_products.value}">${kpis.active_products.value}</div>
-                            <div class="flex items-center gap-2 mt-2">
-                                <span class="${kpis.active_products.trend === 'up' ? 'badge-trend-up' : 'badge-trend-down'}">${kpis.active_products.change}</span>
-                                <span class="text-[10px] text-slate-500">vs last period</span>
-                            </div>
-                        </div>
-                        <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-orange-500 to-amber-500 opacity-50"></div>
-                    </div>
-                `;
-
-                // 2. Render Trends Line Chart
-                const trendCtx = document.getElementById('trend-chart').getContext('2d');
-                
-                // Gradients for elegant fills
-                const revGrad = trendCtx.createLinearGradient(0, 0, 0, 300);
-                revGrad.addColorStop(0, 'rgba(59, 130, 246, 0.22)');
-                revGrad.addColorStop(1, 'rgba(59, 130, 246, 0.00)');
-                
-                const profGrad = trendCtx.createLinearGradient(0, 0, 0, 300);
-                profGrad.addColorStop(0, 'rgba(20, 184, 166, 0.22)');
-                profGrad.addColorStop(1, 'rgba(20, 184, 166, 0.00)');
-                
-                const optData = optimizeChartData(data.sales_trends);
-
-                const trendChart = new Chart(trendCtx, {
-                    type: 'line',
-                    data: {
-                        labels: optData.labels,
-                        datasets: [
-                            {
-                                label: 'Revenue',
-                                data: optData.revenue,
-                                borderColor: '#3B82F6',
-                                backgroundColor: revGrad,
-                                fill: true,
-                                tension: 0.4,
-                                borderWidth: 2.5,
-                                pointRadius: 0,
-                                pointHoverRadius: 6,
-                                pointBackgroundColor: '#3B82F6',
-                                pointBorderColor: '#0B1020',
-                                pointBorderWidth: 2,
-                                hoverBackgroundColor: '#3B82F6'
-                            },
-                            {
-                                label: 'Profit',
-                                data: optData.profit,
-                                borderColor: '#14B8A6',
-                                backgroundColor: profGrad,
-                                fill: true,
-                                tension: 0.4,
-                                borderWidth: 2.5,
-                                pointRadius: 0,
-                                pointHoverRadius: 6,
-                                pointBackgroundColor: '#14B8A6',
-                                pointBorderColor: '#0B1020',
-                                pointBorderWidth: 2,
-                                hoverBackgroundColor: '#14B8A6'
-                            }
-                        ]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        interaction: {
-                            intersect: false,
-                            mode: 'index'
-                        },
-                        plugins: {
-                            legend: {
-                                position: 'top',
-                                align: 'end',
-                                labels: {
-                                    color: '#94A3B8',
-                                    boxWidth: 10,
-                                    boxHeight: 10,
-                                    usePointStyle: true,
-                                    pointStyle: 'circle',
-                                    font: { family: 'Inter', size: 12, weight: 500 }
-                                }
-                            },
-                            tooltip: {
-                                backgroundColor: 'rgba(18, 26, 47, 0.95)',
-                                titleColor: '#F8FAFC',
-                                bodyColor: '#94A3B8',
-                                borderColor: 'rgba(255, 255, 255, 0.08)',
-                                borderWidth: 1,
-                                padding: 12,
-                                boxPadding: 6,
-                                usePointStyle: true,
-                                callbacks: {
-                                    label: function(context) {
-                                        let label = context.dataset.label || '';
-                                        if (label) {
-                                            label += ': ';
-                                        }
-                                        if (context.parsed.y !== null) {
-                                            label += formatCurrency(context.parsed.y);
-                                        }
-                                        return label;
-                                    }
-                                }
-                            },
-                            zoom: {
-                                zoom: {
-                                    wheel: {
-                                        enabled: true,
-                                        speed: 0.05
-                                    },
-                                    pinch: {
-                                        enabled: true
-                                    },
-                                    mode: 'x',
-                                },
-                                pan: {
-                                    enabled: true,
-                                    mode: 'x',
-                                    threshold: 10
-                                }
-                            }
-                        },
-                        scales: {
-                            x: {
-                                grid: {
-                                    display: false
-                                },
-                                ticks: {
-                                    color: '#64748B',
-                                    maxTicksLimit: 12,
-                                    font: { family: 'Inter', size: 10, weight: 500 }
-                                }
-                            },
-                            y: {
-                                grid: {
-                                    color: 'rgba(255, 255, 255, 0.03)',
-                                    borderDash: [5, 5]
-                                },
-                                ticks: {
-                                    color: '#64748B',
-                                    font: { family: 'Inter', size: 10 },
-                                    callback: function(value) {
-                                        if (value >= 1000000) return '₹' + (value / 1000000).toFixed(1) + 'M';
-                                        if (value >= 1000) return '₹' + (value / 1000) + 'k';
-                                        return '₹' + value;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                });
-
-                document.getElementById('reset-zoom-btn').addEventListener('click', () => {
-                    trendChart.resetZoom();
-                });
-
-                // 3. Render Category Share Doughnut Chart
-                const catCtx = document.getElementById('category-chart').getContext('2d');
-                const catColors = getCategoryPalette(data.category_share.map(c => c.category));
-                const totalRevenue = data.category_share.reduce((acc, c) => acc + safeNum(c.revenue), 0);
-
-                new Chart(catCtx, {
-                    type: 'doughnut',
-                    data: {
-                        labels: data.category_share.map(c => c.category),
-                        datasets: [{
-                            data: data.category_share.map(c => c.revenue),
-                            backgroundColor: data.category_share.map(c => catColors[c.category]),
-                            borderWidth: 2,
-                            borderColor: '#121A2F'
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        cutout: '75%',
-                        onClick: (event, activeElements) => {
-                            if (activeElements.length > 0) {
-                                const index = activeElements[0].index;
-                                const categoryName = data.category_share[index].category;
-                                filterByCategory(categoryName);
-                            }
-                        },
-                        onHover: (event, chartElement) => {
-                            event.chart.canvas.style.cursor = chartElement.length ? 'pointer' : 'default';
-                        },
-                        plugins: {
-                            legend: {
-                                position: 'bottom',
-                                labels: {
-                                    color: '#94A3B8',
-                                    boxWidth: 8,
-                                    usePointStyle: true,
-                                    pointStyle: 'circle',
-                                    font: { family: 'Inter', size: 11, weight: 500 },
-                                    padding: 15
-                                }
-                            },
-                            tooltip: {
-                                backgroundColor: 'rgba(18, 26, 47, 0.95)',
-                                titleColor: '#F8FAFC',
-                                bodyColor: '#94A3B8',
-                                borderColor: 'rgba(255, 255, 255, 0.08)',
-                                borderWidth: 1,
-                                padding: 12,
-                                boxPadding: 6,
-                                usePointStyle: true,
-                                callbacks: {
-                                    label: function(context) {
-                                        let label = context.label || '';
-                                        if (label) {
-                                            label += ': ';
-                                        }
-                                        if (context.parsed !== null) {
-                                            const pct = totalRevenue > 0 ? ((context.parsed / totalRevenue) * 100).toFixed(1) : '0';
-                                            label += `${formatCurrency(context.parsed)} (${pct}%)`;
-                                        }
-                                        return label;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                });
-
-                // 4. Render Products Table
-                const allTopProducts = data.top_products;
-
-                function renderProductsTable(productsList) {
-                    const tbody = document.getElementById('top-products-body');
-                    if (productsList.length === 0) {
-                        tbody.innerHTML = `<tr><td colspan="5" class="px-4 py-8 text-center text-slate-500 font-medium">No products match this category.</td></tr>`;
-                        return;
-                    }
-                    
-                    let rows = '';
-                    productsList.forEach(p => {
-                        const colorHex = catColors[p.category] || '#64748B';
-                        rows += `
-                            <tr class="hover-highlight border-b border-white/5 transition-colors group">
-                                <td class="px-4 py-4 text-sm font-semibold text-slate-100">${p.product_name}</td>
-                                <td class="px-4 py-4 text-xs font-medium text-slate-400">
-                                    <div class="flex items-center gap-2">
-                                        <span class="category-dot" style="background-color: ${colorHex}"></span>
-                                        <span>${p.category}</span>
-                                    </div>
-                                </td>
-                                <td class="px-4 py-4 text-xs text-right font-mono text-slate-300">${p.quantity_sold.toLocaleString()}</td>
-                                <td class="px-4 py-4 text-xs text-right font-mono font-medium text-slate-100">${formatCurrency(p.revenue)}</td>
-                                <td class="px-4 py-4 text-xs text-right font-mono font-semibold text-emerald-400">${formatCurrency(p.profit)}</td>
-                            </tr>
-                        `;
-                    });
-                    tbody.innerHTML = rows;
-                }
-
-                window.filterByCategory = (categoryName) => {
-                    const filtered = allTopProducts.filter(p => p.category === categoryName);
-                    renderProductsTable(filtered);
-                    
-                    const filterBadge = document.getElementById('active-category-filter');
-                    const categorySpan = document.getElementById('filter-category-name');
-                    categorySpan.innerText = categoryName;
-                    filterBadge.classList.remove('hidden');
-                };
-
-                window.clearCategoryFilter = () => {
-                    renderProductsTable(allTopProducts);
-                    const filterBadge = document.getElementById('active-category-filter');
-                    filterBadge.classList.add('hidden');
-                };
-
-                renderProductsTable(allTopProducts);
-            } catch (error) {
-                console.error(error);
-                document.getElementById('kpi-grid').innerHTML = `<div class="bg-error/10 border border-error/20 text-error p-6 rounded-2xl col-span-4 text-sm shadow-lg">Failed to load overview analytics metrics: ${error.message}</div>`;
-            }
-
-            document.getElementById('export-csv-btn').addEventListener('click', () => {
-                window.location.href = '/pages/reports.html';
-            });
-        });
-    </script>
+    <script src="/js/charts.js"></script>
+    <script src="/js/dashboard.js"></script>
 </body>
 </html>

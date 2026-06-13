@@ -1,10 +1,13 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 from app.database.db import get_db
 from app.database.models import SalesData, Product, User, ElasticityAnalysis
 from app.database.schemas import DashboardResponse
 from app.api.routes.auth import get_current_user
+from typing import Optional, List
+import pandas as pd
+from app.services.analytics import apply_rolling_average
 
 router = APIRouter(prefix="/dashboard", tags=["Dashboard Analytics"])
 
@@ -152,3 +155,80 @@ def get_dashboard_summary(
         "region_share": region_share,
         "top_products": top_products
     }
+
+@router.get("/trends")
+def get_trends(
+    interval: str = "daily",
+    category: Optional[str] = None,
+    metric: str = "revenue",
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Retrieve raw daily sales trend data with category filters and rolling averages."""
+    # 1. Fetch sales trends grouped by sales_date
+    query = db.query(
+        SalesData.sales_date,
+        func.sum(SalesData.revenue).label("revenue"),
+        func.sum(SalesData.profit).label("profit"),
+        func.sum(SalesData.quantity_sold).label("quantity_sold")
+    )
+    
+    if category:
+        query = query.join(Product, SalesData.product_id == Product.id).filter(Product.category == category)
+        
+    query = query.group_by(SalesData.sales_date).order_by(SalesData.sales_date)
+    results = query.all()
+    
+    if not results:
+        return []
+        
+    # 2. Query top category per date to include in tooltip context
+    top_cat_query = db.query(
+        SalesData.sales_date,
+        Product.category,
+        func.sum(SalesData.revenue).label("rev")
+    ).join(Product, SalesData.product_id == Product.id)\
+     .group_by(SalesData.sales_date, Product.category).all()
+     
+    top_cats = {}
+    for d, cat, rev in top_cat_query:
+        d_str = str(d)
+        val = float(rev or 0.0)
+        if d_str not in top_cats or val > top_cats[d_str]["rev"]:
+            top_cats[d_str] = {"category": cat, "rev": val}
+            
+    # 3. Compile daily record list
+    data = []
+    for r in results:
+        d_str = str(r.sales_date)
+        rev_val = float(r.revenue or 0.0)
+        qty_val = int(r.quantity_sold or 0)
+        profit_val = float(r.profit or 0.0)
+        avg_val = (rev_val / qty_val) if qty_val > 0 else 0.0
+        top_cat = top_cats.get(d_str, {}).get("category", "General")
+        
+        data.append({
+            "date": d_str,
+            "revenue": rev_val,
+            "profit": profit_val,
+            "quantity_sold": qty_val,
+            "avg_order_value": avg_val,
+            "top_category": top_cat
+        })
+        
+    df = pd.DataFrame(data)
+    
+    # 4. Map the requested metric to actual column
+    target_metric = metric
+    if target_metric not in ["revenue", "profit", "quantity_sold", "avg_order_value"]:
+        target_metric = "revenue"
+        
+    # Compute 3-day and 7-day rolling averages on the target metric
+    df["rolling_avg_3"] = apply_rolling_average(df, target_metric, 3)
+    df["rolling_avg_7"] = apply_rolling_average(df, target_metric, 7)
+    
+    # Fill NaN values with 0
+    df = df.fillna(0)
+    
+    return df.to_dict(orient="records")
+

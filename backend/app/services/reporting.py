@@ -714,7 +714,7 @@ def generate_pdf_report(db: Session, user_id: str = None) -> str:
     # Get data metrics
     sales = db.query(SalesData).all()
     if not sales:
-        return ""
+        raise ValueError("No sales data available for report generation.")
         
     total_rev = sum(float(s.revenue) for s in sales)
     total_cost = sum(float(s.cost) * int(s.quantity_sold) for s in sales)

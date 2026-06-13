@@ -87,6 +87,9 @@ class ElasticityAnalysis(Base):
     product_id = Column(String, ForeignKey("products.id"), nullable=False)
     elasticity_score = Column(Numeric(8, 4), nullable=False)
     elasticity_type = Column(String, nullable=False)  # elastic, inelastic, unitary
+    sample_size = Column(Integer, nullable=True)
+    r_squared = Column(Numeric(6, 4), nullable=True)
+    confidence_score = Column(Numeric(6, 4), nullable=True)
     analysis_date = Column(DateTime, default=lambda: datetime.now(timezone.utc))
     
     # Relationships

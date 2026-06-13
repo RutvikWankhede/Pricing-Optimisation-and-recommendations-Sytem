@@ -15,6 +15,10 @@ from app.services.forecasting import train_and_forecast_all
 from app.services.recommendation import generate_all_recommendations
 from app.api.routes.auth import get_current_user
 from app.core.config import settings
+from fastapi import Request
+from app.core.limiter import limiter
+import logging
+logger = logging.getLogger("uvicorn")
 
 router = APIRouter(prefix="/upload", tags=["Dataset Upload"])
 
@@ -72,8 +76,9 @@ def run_analytics_pipeline(db_session_factory, file_path: str, file_name: str, d
         db.close()
 
 @router.post("/analyze", status_code=status.HTTP_200_OK)
-@router.dependencies([Depends(limiter.limit("20/minute"))])
+@limiter.limit("20/minute")
 async def analyze_dataset(
+    request: Request,
     file: UploadFile = File(...),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
@@ -183,6 +188,7 @@ def ingest_dataset(
 @router.post("/upload_dataset", response_model=DatasetResponse, status_code=status.HTTP_202_ACCEPTED)
 @limiter.limit("20/minute")
 async def upload_dataset(
+    request: Request,
     background_tasks: BackgroundTasks,
     file: UploadFile = File(...),
     db: Session = Depends(get_db),
@@ -209,7 +215,7 @@ async def upload_dataset(
         file_url = upload_file(content, raw_filename)
     except Exception as e:
         # Log the failure and continue with local storage only
-        loguru_logger.error(f"Cloudinary upload failed for {raw_filename}: {e}")
+        logger.error(f"Cloudinary upload failed for {raw_filename}: {e}")
         file_url = None
 
     dataset = Dataset(
@@ -233,49 +239,7 @@ async def upload_dataset(
         None
     )
     return dataset
-@limiter.limit("20/minute")
-async def upload_dataset(
-    background_tasks: BackgroundTasks,
-    file: UploadFile = File(...),
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
-):
-    """Legacy endpoint: Upload sales transactions Excel/CSV file and trigger the analytics pipeline immediately (auto-mapped)."""
-    if not file.filename.endswith((".csv", ".xlsx", ".xls")):
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Unsupported file format. Please upload a CSV or Excel spreadsheet."
-        )
-    content = await file.read()
-    if len(content) > settings.MAX_DOCUMENT_SIZE:
-        raise HTTPException(status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
-                            detail="Uploaded file exceeds maximum allowed size.")
-    dataset_id = str(uuid.uuid4())
-    raw_filename = f"{dataset_id}_{file.filename}"
-    raw_path = settings.UPLOAD_FOLDER / raw_filename
-    with open(raw_path, "wb") as f:
-        f.write(content)
-        
-    dataset = Dataset(
-        id=dataset_id,
-        file_name=file.filename,
-        user_id=current_user.id,
-        total_records=0,
-        status="uploaded"
-    )
-    db.add(dataset)
-    db.commit()
-    db.refresh(dataset)
-    
-    background_tasks.add_task(
-        run_analytics_pipeline,
-        SessionLocal,
-        str(raw_path),
-        dataset.file_name,
-        dataset.id,
-        None
-    )
-    return dataset
+
 
 @router.get("/sample")
 def download_sample_file(

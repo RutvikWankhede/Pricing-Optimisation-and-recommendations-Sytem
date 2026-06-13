@@ -18,7 +18,8 @@ client = TestClient(app)
 
 @pytest.fixture(scope="module", autouse=True)
 def setup_db():
-    # Make sure tables exist
+    # Make sure tables exist and match latest schema
+    Base.metadata.drop_all(bind=engine)
     Base.metadata.create_all(bind=engine)
     db = SessionLocal()
     try:
@@ -95,7 +96,7 @@ def test_dataset_upload():
     file_payload = {"file": ("test_sales.csv", io.BytesIO(csv_data.encode("utf-8")), "text/csv")}
     
     response = client.post(
-        "/api/v1/upload/dataset",
+        "/api/v1/upload/upload_dataset",
         headers=headers,
         files=file_payload
     )
@@ -208,3 +209,23 @@ def test_download_report_pdf():
     assert response.status_code == 200
     assert response.headers["content-type"] == "application/pdf"
     assert len(response.content) > 0
+
+def test_recommendation_explainability_fields():
+    import json
+    headers = get_auth_headers()
+    product_id = pytest.shared_product_id
+    response = client.get(f"/api/v1/pricing/recommendations/{product_id}", headers=headers)
+    assert response.status_code == 200
+    data = response.json()
+    reason_str = data["recommendation_reason"]
+    reason = json.loads(reason_str)
+    
+    assert "recommended_price" in reason
+    assert "confidence_score" in reason
+    assert "elasticity_used" in reason
+    assert "branch_taken" in reason
+    assert "reasoning" in reason
+    assert "bounds_applied" in reason
+    assert "flagged_for_review" in reason
+    assert isinstance(reason["bounds_applied"], list)
+    assert isinstance(reason["flagged_for_review"], bool)

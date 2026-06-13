@@ -272,14 +272,56 @@
                     const summaryText = isJson ? reasonObj.summary : rec.recommendation_reason;
                     const confidenceVal = isJson ? reasonObj.confidence : '92.4% Model Fit';
 
+                    // Extracted Phase 2 explainability properties
+                    const confidenceScore = isJson && reasonObj.confidence_score !== undefined ? reasonObj.confidence_score : 0.85;
+                    const confidencePct = (confidenceScore * 100).toFixed(1) + '%';
+                    const flaggedForReview = isJson && reasonObj.flagged_for_review !== undefined ? reasonObj.flagged_for_review : false;
+
+                    let confidenceColorClass = 'text-slate-400';
+                    if (confidenceScore < 0.5) {
+                        confidenceColorClass = 'text-rose-400 font-bold';
+                    } else if (confidenceScore < 0.7) {
+                        confidenceColorClass = 'text-amber-500';
+                    }
+
+                    let reviewBadge = '';
+                    if (flaggedForReview) {
+                        reviewBadge = `<span class="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-bold bg-amber-500/10 text-amber-500 border border-amber-500/20 ml-1.5" title="Review Required: Low confidence or high price swing">REVIEW</span>`;
+                    }
+
+                    let warningNotice = '';
+                    if (flaggedForReview) {
+                        let warnings = [];
+                        if (confidenceScore < 0.5) {
+                            warnings.push(`Low confidence score (${confidencePct})`);
+                        }
+                        const priceChange = Math.abs(((recommendedPrice - currentPrice) / currentPrice) * 100);
+                        if (priceChange > 15.0) {
+                            warnings.push(`High price change swing (${priceChange.toFixed(1)}%)`);
+                        }
+                        
+                        warningNotice = `
+                            <div class="col-span-1 md:col-span-4 bg-amber-500/10 border border-amber-500/20 text-amber-400 p-3 rounded-xl flex items-center gap-2 mb-3">
+                                <span class="material-symbols-outlined text-[16px]">warning</span>
+                                <span class="text-xs font-semibold">Flagged for Review: ${warnings.join(' and ')}. Recommended to verify details manually.</span>
+                            </div>
+                        `;
+                    }
+
                     rowsHtml += `
                         <tr class="hover:bg-[#243041]/40 border-b border-[#334155]/10 transition-colors cursor-pointer" onclick="toggleRowDetails('${rec.product_id}')">
                             <td class="px-md py-md text-center">
                                 <span id="icon-${rec.product_id}" class="material-symbols-outlined text-tertiary text-xs transition-transform duration-200 block">chevron_right</span>
                             </td>
-                            <td class="px-md py-md font-semibold text-on-surface text-sm max-w-[150px] truncate" title="${rec.product_name}">${rec.product_name}</td>
+                            <td class="px-md py-md font-semibold text-on-surface text-sm max-w-[150px] truncate" title="${rec.product_name}">
+                                <div>${rec.product_name}</div>
+                                <div class="text-[10px] ${confidenceColorClass} font-normal mt-0.5">Confidence: ${confidencePct}</div>
+                            </td>
                             <td class="px-md py-md text-center">
-                                <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${actionBadgeClass}">${actionText}</span>
+                                <div class="flex items-center justify-center">
+                                    <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${actionBadgeClass}">${actionText}</span>
+                                    ${reviewBadge}
+                                </div>
                             </td>
                             <td class="px-md py-md text-right font-mono text-tertiary text-xs font-semibold">${formatCurrency(currentPrice)}</td>
                             <td class="px-md py-md text-right font-mono text-primary text-sm font-extrabold">${formatCurrency(recommendedPrice)}</td>
@@ -295,6 +337,7 @@
                         </tr>
                         <tr id="details-${rec.product_id}" class="hidden bg-[#0f172a]/45 border-b border-[#334155]/10">
                             <td colspan="8" class="px-lg py-md">
+                                ${warningNotice}
                                 <div class="grid grid-cols-1 md:grid-cols-4 gap-md text-xs font-normal">
                                     <!-- Strategy Card -->
                                     <div class="bg-[#162033] border border-[#334155]/40 rounded-xl p-md flex flex-col justify-between shadow-sm">

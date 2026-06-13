@@ -39,6 +39,9 @@ def get_elasticity(
         "product_name": el.product.product_name,
         "elasticity_score": float(el.elasticity_score),
         "elasticity_type": el.elasticity_type,
+        "sample_size": el.sample_size,
+        "r_squared": float(el.r_squared) if el.r_squared is not None else None,
+        "confidence_score": float(el.confidence_score) if el.confidence_score is not None else None,
         "analysis_date": el.analysis_date
     }
 
@@ -55,6 +58,9 @@ def get_all_elasticity(
             "product_name": el.product.product_name,
             "elasticity_score": float(el.elasticity_score),
             "elasticity_type": el.elasticity_type,
+            "sample_size": el.sample_size,
+            "r_squared": float(el.r_squared) if el.r_squared is not None else None,
+            "confidence_score": float(el.confidence_score) if el.confidence_score is not None else None,
             "analysis_date": el.analysis_date
         }
         for el in all_el

@@ -81,6 +81,9 @@ class ElasticityResponse(BaseModel):
     product_name: str
     elasticity_score: float
     elasticity_type: str
+    sample_size: Optional[int] = None
+    r_squared: Optional[float] = None
+    confidence_score: Optional[float] = None
     analysis_date: datetime
 
     model_config = ConfigDict(from_attributes=True)

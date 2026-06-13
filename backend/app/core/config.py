@@ -12,23 +12,33 @@ class Settings:
     # Paths
     BASE_DIR: Path = Path(__file__).resolve().parents[3]
     
-    # Database
-    
+    # Database configuration
+    # Determine environment (default to development)
+    ENVIRONMENT: str = os.getenv("ENVIRONMENT", "development")
+
     # Upload size limits
     MAX_IMAGE_SIZE: int = int(os.getenv("MAX_IMAGE_SIZE", "5242880"))  # 5 MB
     MAX_DOCUMENT_SIZE: int = int(os.getenv("MAX_DOCUMENT_SIZE", "26214400"))  # 25 MB
-    # Production: PostgreSQL URL required. No fallback to SQLite in production.
-    DATABASE_URL: str = os.getenv(
-        "DATABASE_URL"
-    )
-    if not DATABASE_URL:
-        raise RuntimeError("DATABASE_URL environment variable is required for production.")
-    
-    # JWT Security
-    # SECRET_KEY must be provided via environment; no default for production
-    SECRET_KEY: str = os.getenv("SECRET_KEY")
-    if not SECRET_KEY:
-        raise RuntimeError("SECRET_KEY environment variable is required for security")
+
+    # Database URL handling
+    _db_url: str | None = os.getenv("DATABASE_URL")
+    if ENVIRONMENT == "production":
+        if not _db_url:
+            raise RuntimeError("DATABASE_URL environment variable is required for production.")
+        DATABASE_URL: str = _db_url
+    else:
+        # Development fallback to SQLite file in BASE_DIR
+        DATABASE_URL = _db_url or f"sqlite:///{BASE_DIR / 'dev.db'}"
+
+    # JWT Security configuration
+    _secret_key: str | None = os.getenv("SECRET_KEY")
+    if ENVIRONMENT == "production":
+        if not _secret_key:
+            raise RuntimeError("SECRET_KEY environment variable is required for security in production")
+        SECRET_KEY: str = _secret_key
+    else:
+        # Development placeholder secret
+        SECRET_KEY = _secret_key or "dev-secret-key"
     ALGORITHM: str = os.getenv("ALGORITHM", "HS256")
     ACCESS_TOKEN_EXPIRE_MINUTES: int = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "180"))
     SENTRY_DSN: str = os.getenv("SENTRY_DSN", "")

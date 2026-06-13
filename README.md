@@ -1,123 +1,185 @@
+# PriceSense Analytics
 
-# PriceSense Analytics (ML-Based Pricing Optimization & Recommendation System)
+### ML-Based Pricing Optimization & Recommendation System
 
-PriceSense Analytics is an AI-powered pricing optimization dashboard that helps businesses analyze sales trends, forecast demand, and generate pricing recommendations using machine learning.
+PriceSense Analytics is a pricing optimization and business analytics platform built to help businesses analyze sales performance, forecast demand, and generate smart pricing recommendations using machine learning concepts.
 
-The project uses FastAPI for the backend, SQLite for storage, and a simple frontend dashboard for visualizing analytics and reports.
+The project combines data analytics, forecasting, elasticity analysis, and interactive dashboards into a simple SaaS-style web application.
 
 ---
 
-## 🚀 Getting Started
+# Features
 
-### 1. Prerequisites
-Ensure you have **Python 3.10+** installed on your system.
+* Revenue and profit analytics dashboard
+* Demand forecasting
+* Price elasticity analysis
+* AI-based pricing recommendations
+* Dynamic pricing simulation
+* CSV dataset upload support
+* PDF and Excel report generation
+* Interactive charts and visualizations
+* JWT-based authentication system
 
-### 2. Environment Setup
-Create a virtual environment and install the required dependencies:
+---
+
+# Tech Stack
+
+## Frontend
+
+* HTML5
+* CSS3
+* Vanilla JavaScript
+* Chart.js
+
+## Backend
+
+* FastAPI
+* SQLAlchemy
+* Uvicorn
+* JWT Authentication
+
+## Database
+
+* SQLite (Development)
+* PostgreSQL ready (optional)
+
+## Machine Learning & Analytics
+
+* Pandas
+* NumPy
+* Scikit-learn
+
+## Reporting
+
+* ReportLab
+* OpenPyXL
+
+---
+
+# Getting Started
+
+## 1. Clone the Repository
 
 ```bash
-# Navigate to project folder
-cd pricing_optimization_system
+git clone https://github.com/RutvikWankhede/Pricing-Optimisation-and-recommendations-Sytem.git
+cd Pricing-Optimisation-and-recommendations-Sytem
+```
 
-# Create virtual environment
+---
+
+## 2. Create Virtual Environment
+
+```bash
 python -m venv .venv
+```
 
-# Activate virtual environment
-# On Windows:
+### Activate Environment
+
+#### Windows
+
+```bash
 .venv\Scripts\activate
-# On macOS/Linux:
-source .venv/bin/activate
+```
 
-# Install backend and server dependencies
+#### macOS/Linux
+
+```bash
+source .venv/bin/activate
+```
+
+---
+
+## 3. Install Dependencies
+
+```bash
 pip install -r backend/requirements.txt
 ```
 
-### 3. Initialize & Seed the Database
-Run the seeder script to initialize the SQLite tables, create a default analyst account (`analyst@pricing.ai` / `password123`), process the sample dataset, calculate elasticities, and pre-train the ML models:
+---
+
+## 4. Initialize Database
 
 ```bash
 python init_db.py
 ```
 
-### 4. Run the Application
-Start the FastAPI backend server using Uvicorn:
+OR use the advanced realistic dataset:
 
 ```bash
-python backend/app/main.py
+python pricesense_clean_dataset.py
 ```
 
-Open your browser and navigate to:
-👉 **[http://localhost:8000](http://localhost:8000)** (Main UI dashboard client)
+This generates:
 
-The interactive Swagger API documentation is accessible at:
-👉 [http://localhost:8000/docs](http://localhost:8000/docs)
+* realistic food delivery transactions
+* elasticity calculations
+* forecasting data
+* pricing recommendations
 
 ---
-## 🛠️ Testing
 
-To run the automated backend endpoint test suite, execute:
+## 5. Run the Application
+
+```bash
+python -m uvicorn backend.app.main:app --reload
+```
+
+---
+
+# Access the Application
+
+Main Dashboard:
+
+```txt
+http://localhost:8000
+```
+
+Swagger API Docs:
+
+```txt
+http://localhost:8000/docs
+```
+
+---
+
+# Demo Login
+
+```txt
+Email: analyst@pricing.ai
+Password: password123
+```
+
+---
+
+# Running Tests
 
 ```bash
 python -m pytest backend/tests/
 ```
-=======
 
-## Features
-* Demand forecasting
-* Price elasticity analysis
-* Revenue optimization
-* Dynamic pricing simulations
-* Interactive analytics dashboard
-* CSV dataset upload and reporting
 ---
 
-## ## Tech Stack
+# Project Highlights
 
-### Frontend
+* Confidence-aware pricing recommendation engine
+* Explainable AI recommendation logic
+* Interactive SaaS-style analytics dashboard
+* Realistic synthetic dataset generation
+* Revenue optimization simulation
+* Modern dark UI with responsive charts
 
-* HTML5
-* CSS3
-* JavaScript (Vanilla JS)
-* Chart.js
-* Material Symbols Icons
+---
 
-### Backend
+# Future Improvements
 
-* FastAPI
-* Uvicorn
-* SQLAlchemy
-* JWT Authentication
-* SlowAPI (Rate Limiting)
 
-### Database
+* PostgreSQL production migration
+* Redis caching
+* Advanced forecasting models
+* Role-based access control
 
-* SQLite
-* PostgreSQL (optional production support)
-
-### Machine Learning & Analytics
-
-* Pandas
-* NumPy
-* Scikit-learn
-* Matplotlib
-
-### Reporting
-
-* ReportLab (PDF Reports)
-* OpenPyXL (Excel Reports)
-
-### Security & Configuration
-
-* Python-dotenv
-* Passlib (bcrypt)
-* PyJWT
-
-### Deployment / Dev Tools
-
-* Git & GitHub
-* Python Virtual Environment
-* REST API
-* Swagger/OpenAPI Docs
+---
 
 
 
+Built as a college-level ML and analytics project focused on pricing optimization, forecasting, and business intelligence systems.

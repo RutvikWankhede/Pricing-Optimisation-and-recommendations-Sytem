@@ -1,4 +1,7 @@
+import sys
 import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -6,14 +9,17 @@ from starlette.middleware.base import BaseHTTPMiddleware
 import logging
 import sys
 import uuid
-from loguru import logger as loguru_logger
-import sentry_sdk
 
+# Logging will be configured later
 
-from slowapi import Limiter
-from slowapi.util import get_remote_address
-from slowapi.errors import RateLimitExceeded
-from slowapi.middleware import SlowAPIMiddleware
+try:
+    import sentry_sdk
+except ImportError:
+    sentry_sdk = None
+
+# SlowAPI is optional; we rely on our internal limiter fallback.
+# Importing SlowAPI is avoided to prevent startup errors when the package is missing.
+SLOWAPI_AVAILABLE = False
 
 from app.core.config import settings
 from app.database.db import engine, Base
@@ -29,15 +35,25 @@ except Exception:
     pass
 
 # 2. Initialize FastAPI App with rate limiting
-limiter = Limiter(key_func=get_remote_address, default_limits=["100/minute"])  # 100 requests per minute per IP
+from app.core.limiter import limiter
 app = FastAPI(
     title=settings.PROJECT_NAME,
     description="Automated ML Pricing Elasticity, Demand Forecasting & Scenario Optimization.",
     version="1.0.0",
 )
+
+# Set limiter in app state
 app.state.limiter = limiter
-app.add_exception_handler(RateLimitExceeded, lambda request, exc: app.state.limiter._rate_limit_exceeded_handler(request, exc))
-app.add_middleware(SlowAPIMiddleware)
+# Register SlowAPI middleware and exception handler when the real limiter is available.
+try:
+    from slowapi import _rate_limit_exceeded_handler
+    from slowapi.errors import RateLimitExceeded
+    from slowapi.middleware import SlowAPIMiddleware
+    app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+    app.add_middleware(SlowAPIMiddleware)
+except ImportError:
+    pass  # slowapi not installed; DummyLimiter is in use — no middleware needed.
+
 
 # 3. Security Headers Middleware
 class SecurityHeadersMiddleware(BaseHTTPMiddleware):
@@ -47,30 +63,36 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         response.headers["X-Frame-Options"] = "DENY"
         response.headers["Referrer-Policy"] = "no-referrer"
         response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
-        response.headers["Content-Security-Policy"] = "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline';"
+        response.headers["Content-Security-Policy"] = (
+            "default-src 'self'; "
+            "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com https://cdn.jsdelivr.net; "
+            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.tailwindcss.com https://cdn.jsdelivr.net; "
+            "font-src 'self' data: https://fonts.gstatic.com; "
+            "img-src 'self' data: blob:; "
+            "connect-src 'self' https://cdn.tailwindcss.com https://cdn.jsdelivr.net;"
+        )
         # Remove potentially revealing header
-        response.headers.pop("X-Powered-By", None)
+        if "X-Powered-By" in response.headers:
+            del response.headers["X-Powered-By"]
         return response
 
 app.add_middleware(SecurityHeadersMiddleware)
 # Initialize Sentry
-if settings.SENTRY_DSN:
+if settings.SENTRY_DSN and sentry_sdk:
     sentry_sdk.init(
         dsn=settings.SENTRY_DSN,
         traces_sample_rate=0.1,
         environment=os.getenv("ENVIRONMENT", "production")
     )
 else:
-    loguru_logger.warning("SENTRY_DSN not set; Sentry not initialized")
+    logging.getLogger("uvicorn").warning("Sentry not initialized (SDK missing or DSN not set)")
 
-# Configure Loguru JSON logger
-loguru_logger.remove()
-loguru_logger.add(
-    sys.stdout,
-    format="{\"timestamp\":\"{time:YYYY-MM-DDTHH:mm:ssZ}\",\"level\":\"{level}\",\"message\":\"{message}\"}",
-    level="INFO",
-    serialize=True,
+# Configure standard logger
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s",
 )
+logger = logging.getLogger("uvicorn")
 
 # Request ID Middleware
 class RequestIDMiddleware(BaseHTTPMiddleware):
@@ -86,13 +108,8 @@ app.add_middleware(RequestIDMiddleware)
 # Logging Middleware
 class LoggingMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
-        logger = loguru_logger.bind(
-            request_id=getattr(request.state, "request_id", None),
-            path=request.url.path,
-            method=request.method,
-            user_id=getattr(request.state, "user_id", None)
-        )
-        logger.info("Incoming request")
+        logger = logging.getLogger("uvicorn")
+        logger.info(f"Incoming request {request.method} {request.url.path} request_id={getattr(request.state, 'request_id', None)}")
         response = await call_next(request)
         logger.info(f"Response status: {response.status_code}")
         return response
@@ -126,4 +143,4 @@ app.mount("/", StaticFiles(directory=settings.BASE_DIR / "frontend", html=True),
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
+    uvicorn.run("app.main:app", host="127.0.0.1", port=8000, reload=True)
