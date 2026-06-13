@@ -9,6 +9,7 @@ __pycache__/
 *$py.class
 .pytest_cache/
 
+
 # Databases & Credentials
 .env
 pricing_ai.db
@@ -36,3 +37,26 @@ reports/excel/*
 node_modules/
 dist/
 build/
+
+# Local DB
+dev.db
+
+# Uploads
+backend/uploads/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Environment files
+.env.*
+
+# Vite
+.vite/
+
+# Coverage
+.coverage
+htmlcov/
