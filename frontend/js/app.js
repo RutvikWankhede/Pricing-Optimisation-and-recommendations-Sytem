@@ -1,4 +1,4 @@
-const API_BASE_URL = '/api/v1';
+// API_BASE_URL is now imported from config.js
 
 // 1. Session and Token Helpers
 function getAuthToken() {
