@@ -8,6 +8,9 @@ The project combines data analytics, forecasting, elasticity analysis, and inter
 
 ---
 
+## Live Demo
+Frontend: https://pricing-optimisation-and-recommenda.vercel.app/
+
 # Features
 
 * Revenue and profit analytics dashboard
