@@ -1,5 +1,6 @@
 import sys
 import os
+
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from fastapi import FastAPI, Request
@@ -23,12 +24,21 @@ SLOWAPI_AVAILABLE = False
 
 from app.core.config import settings
 from app.database.db import engine, Base
-from app.api.routes import auth, upload, dashboard, forecasting, pricing, reports, health
+from app.api.routes import (
+    auth,
+    upload,
+    dashboard,
+    forecasting,
+    pricing,
+    reports,
+    health,
+)
 
 # 1. Initialize Database Tables (auto-migration for development SQLite/PG)
 Base.metadata.create_all(bind=engine)
 try:
     from sqlalchemy import text
+
     with engine.begin() as conn:
         conn.execute(text("ALTER TABLE datasets ADD COLUMN summary_metadata TEXT"))
 except Exception:
@@ -36,6 +46,7 @@ except Exception:
 
 # 2. Initialize FastAPI App with rate limiting
 from app.core.limiter import limiter
+
 app = FastAPI(
     title=settings.PROJECT_NAME,
     description="Automated ML Pricing Elasticity, Demand Forecasting & Scenario Optimization.",
@@ -49,6 +60,7 @@ try:
     from slowapi import _rate_limit_exceeded_handler
     from slowapi.errors import RateLimitExceeded
     from slowapi.middleware import SlowAPIMiddleware
+
     app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
     app.add_middleware(SlowAPIMiddleware)
 except ImportError:
@@ -62,7 +74,9 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         response.headers["X-Content-Type-Options"] = "nosniff"
         response.headers["X-Frame-Options"] = "DENY"
         response.headers["Referrer-Policy"] = "no-referrer"
-        response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
+        response.headers["Strict-Transport-Security"] = (
+            "max-age=31536000; includeSubDomains"
+        )
         response.headers["Content-Security-Policy"] = (
             "default-src 'self'; "
             "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com https://cdn.jsdelivr.net; "
@@ -76,16 +90,19 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
             del response.headers["X-Powered-By"]
         return response
 
+
 app.add_middleware(SecurityHeadersMiddleware)
 # Initialize Sentry
 if settings.SENTRY_DSN and sentry_sdk:
     sentry_sdk.init(
         dsn=settings.SENTRY_DSN,
         traces_sample_rate=0.1,
-        environment=os.getenv("ENVIRONMENT", "production")
+        environment=os.getenv("ENVIRONMENT", "production"),
     )
 else:
-    logging.getLogger("uvicorn").warning("Sentry not initialized (SDK missing or DSN not set)")
+    logging.getLogger("uvicorn").warning(
+        "Sentry not initialized (SDK missing or DSN not set)"
+    )
 
 # Configure standard logger
 logging.basicConfig(
@@ -93,6 +110,7 @@ logging.basicConfig(
     format="%(asctime)s - %(levelname)s - %(message)s",
 )
 logger = logging.getLogger("uvicorn")
+
 
 # Request ID Middleware
 class RequestIDMiddleware(BaseHTTPMiddleware):
@@ -103,28 +121,34 @@ class RequestIDMiddleware(BaseHTTPMiddleware):
         response.headers["X-Request-ID"] = request_id
         return response
 
+
 app.add_middleware(RequestIDMiddleware)
+
 
 # Logging Middleware
 class LoggingMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
         logger = logging.getLogger("uvicorn")
-        logger.info(f"Incoming request {request.method} {request.url.path} request_id={getattr(request.state, 'request_id', None)}")
+        logger.info(
+            f"Incoming request {request.method} {request.url.path} request_id={getattr(request.state, 'request_id', None)}"
+        )
         response = await call_next(request)
         logger.info(f"Response status: {response.status_code}")
         return response
 
+
 app.add_middleware(LoggingMiddleware)
-# 4. Configure CORS Middleware (read allowed origins from env, fallback to empty list for production)
-allowed_origins = []
-origins_env = os.getenv("CORS_ORIGINS")
-if origins_env:
-    allowed_origins = [origin.strip() for origin in origins_env.split(",")]
+# 4. Configure CORS Middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=allowed_origins,
+    allow_origins=[
+        "http://localhost:5500",
+        "http://127.0.0.1:5500",
+        "http://localhost:3000",
+        "https://pricing-optimisation-and-recommenda.vercel.app",
+    ],
     allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allow_methods=["*"],
     allow_headers=["*"],
 )
 
@@ -139,8 +163,13 @@ app.include_router(reports.router, prefix=api_prefix)
 app.include_router(health.router)
 
 # 6. Serve Static Frontend Files
-app.mount("/", StaticFiles(directory=settings.BASE_DIR / "frontend", html=True), name="frontend")
+app.mount(
+    "/",
+    StaticFiles(directory=settings.BASE_DIR / "frontend", html=True),
+    name="frontend",
+)
 
 if __name__ == "__main__":
     import uvicorn
+
     uvicorn.run("app.main:app", host="127.0.0.1", port=8000, reload=True)
